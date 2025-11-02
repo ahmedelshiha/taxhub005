@@ -18,6 +18,8 @@ import { toast } from 'sonner'
 import { AlertCircle, Loader2, ChevronDown, ChevronRight, Search, X } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { globalEventEmitter } from '@/lib/event-emitter'
+import { AuditLoggingService, AuditActionType, AuditSeverity } from '@/services/audit-logging.service'
+import { useSession } from 'next-auth/react'
 
 interface RoleFormData {
   name: string
