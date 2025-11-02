@@ -216,7 +216,7 @@
 - ✅ Integrated into useUserManagementSettings for settings changes
 - ✅ CSV export capability for audit logs
 - ✅ Retention policy support (delete old logs)
-- �� Audit statistics and filtering
+- ✅ Audit statistics and filtering
 - ✅ Metadata and change tracking for all operations
 
 #### Task 3.3: Mobile UI Optimization
@@ -241,7 +241,7 @@
 #### Task 4.1: Implement Test Suite
 - **Status:** 🔄 IN PROGRESS
 - **Effort:** 20-30 hours
-- **Notes:** Added API tests for user-management settings endpoint (tests/admin-user-management-settings.api.test.ts). Hook tests next.
+- **Notes:** Added API tests for user-management settings endpoint (tests/admin-user-management-settings.api.test.ts). Added hook tests (tests/admin/settings-user-management.hook.test.tsx).
 
 #### Task 4.2: Performance Profiling
 - **Status:** ⏸️ PENDING
