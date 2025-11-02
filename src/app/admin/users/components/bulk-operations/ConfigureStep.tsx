@@ -37,7 +37,7 @@ export const ConfigureStep: React.FC<ConfigureStepProps> = ({
             <div>
               <label className="block text-sm font-medium mb-2">From Role</label>
               <Select
-                value={config.fromRole || 'PLACEHOLDER'}
+                value={config.fromRole || ''}
                 onValueChange={(role) =>
                   onConfigChange({ ...config, fromRole: role })
                 }
@@ -56,7 +56,7 @@ export const ConfigureStep: React.FC<ConfigureStepProps> = ({
             <div>
               <label className="block text-sm font-medium mb-2">To Role</label>
               <Select
-                value={config.toRole || 'PLACEHOLDER'}
+                value={config.toRole || ''}
                 onValueChange={(role) =>
                   onConfigChange({ ...config, toRole: role })
                 }
@@ -87,7 +87,7 @@ export const ConfigureStep: React.FC<ConfigureStepProps> = ({
             <div>
               <label className="block text-sm font-medium mb-2">New Status</label>
               <Select
-                value={config.toStatus || 'PLACEHOLDER'}
+                value={config.toStatus || ''}
                 onValueChange={(status) =>
                   onConfigChange({ ...config, toStatus: status })
                 }
@@ -183,7 +183,7 @@ export const ConfigureStep: React.FC<ConfigureStepProps> = ({
             <div>
               <label className="block text-sm font-medium mb-2">Email Template</label>
               <Select
-                value={config.emailTemplate || 'PLACEHOLDER'}
+                value={config.emailTemplate || ''}
                 onValueChange={(template) =>
                   onConfigChange({ ...config, emailTemplate: template })
                 }
