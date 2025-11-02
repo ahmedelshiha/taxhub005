@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth/next'
-import { authConfig } from '@/auth.config'
-import { prisma } from '@/lib/prisma'
+import { authOptions } from '@/lib/auth'
+import prisma from '@/lib/prisma'
 
 /**
  * User context attached to request
@@ -16,7 +16,7 @@ export interface AuthenticatedRequest extends NextRequest {
 /**
  * Middleware response type
  */
-type MiddlewareHandler = (request: AuthenticatedRequest) => Promise<NextResponse>
+type MiddlewareHandler = (request: AuthenticatedRequest, context?: any) => Promise<NextResponse>
 
 /**
  * Role type
@@ -42,10 +42,10 @@ export function withAdminAuth(
   handler: MiddlewareHandler,
   requiredRoles: UserRole[] = ['ADMIN', 'SUPER_ADMIN']
 ) {
-  return async (request: NextRequest) => {
+  return async (request: NextRequest, context?: any) => {
     try {
       // Get session
-      const session = await getServerSession(authConfig)
+      const session = await getServerSession(authOptions)
 
       if (!session?.user?.email) {
         return NextResponse.json(
@@ -92,7 +92,7 @@ export function withAdminAuth(
       authenticatedRequest.userEmail = user.email
 
       // Call the actual handler
-      return await handler(authenticatedRequest)
+      return await handler(authenticatedRequest, context)
     } catch (error) {
       console.error('Auth middleware error:', error)
       return NextResponse.json(
@@ -114,10 +114,10 @@ export function withPermissionAuth(
   handler: MiddlewareHandler,
   requiredPermissions: string[] = []
 ) {
-  return async (request: NextRequest) => {
+  return async (request: NextRequest, context?: any) => {
     try {
       // Get session
-      const session = await getServerSession(authConfig)
+      const session = await getServerSession(authOptions)
 
       if (!session?.user?.email) {
         return NextResponse.json(
@@ -175,7 +175,7 @@ export function withPermissionAuth(
       authenticatedRequest.userEmail = user.email
 
       // Call the actual handler
-      return await handler(authenticatedRequest)
+      return await handler(authenticatedRequest, context)
     } catch (error) {
       console.error('Permission auth middleware error:', error)
       return NextResponse.json(
@@ -198,10 +198,10 @@ export function withTenantAuth(
   handler: MiddlewareHandler,
   requiredRoles: UserRole[] = []
 ) {
-  return async (request: NextRequest) => {
+  return async (request: NextRequest, context?: any) => {
     try {
       // Get session
-      const session = await getServerSession(authConfig)
+      const session = await getServerSession(authOptions)
 
       if (!session?.user?.email) {
         return NextResponse.json(
@@ -269,7 +269,7 @@ export function withTenantAuth(
       authenticatedRequest.userEmail = user.email
 
       // Call the actual handler
-      return await handler(authenticatedRequest)
+      return await handler(authenticatedRequest, context)
     } catch (error) {
       console.error('Tenant auth middleware error:', error)
       return NextResponse.json(
@@ -288,10 +288,10 @@ export function withTenantAuth(
  * @returns Wrapped handler
  */
 export function withPublicAuth(handler: MiddlewareHandler) {
-  return async (request: NextRequest) => {
+  return async (request: NextRequest, context?: any) => {
     try {
       // Try to get session, but don't fail if not found
-      const session = await getServerSession(authConfig)
+      const session = await getServerSession(authOptions)
 
       if (session?.user?.email) {
         const user = await prisma.user.findUnique({
@@ -315,7 +315,7 @@ export function withPublicAuth(handler: MiddlewareHandler) {
       }
 
       // Call handler regardless of auth status
-      return await handler(request as AuthenticatedRequest)
+      return await handler(request as AuthenticatedRequest, context)
     } catch (error) {
       console.error('Public auth middleware error:', error)
       return NextResponse.json(
