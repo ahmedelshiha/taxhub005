@@ -139,13 +139,13 @@ export function AuditTab() {
 
       {/* Filters */}
       {showFilters && (
-        <Card className="p-6 border-blue-200 bg-blue-50">
+        <Card className="p-4 sm:p-6 border-blue-200 bg-blue-50">
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Date Range
               </label>
-              <div className="flex gap-2 flex-wrap">
+              <div className={`flex gap-2 ${isMobile ? 'flex-wrap' : 'flex-row'}`}>
                 {(['today', 'week', 'month', 'all'] as const).map(range => (
                   <Button
                     key={range}
