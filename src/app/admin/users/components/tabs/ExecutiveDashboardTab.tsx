@@ -244,21 +244,53 @@ export function ExecutiveDashboardTab({
               <OperationsOverviewCards metrics={displayMetrics} isLoading={isLoading} />
             </section>
 
+            {/* Saved Views & Role Presets */}
+            <section role="region" aria-label="Saved views" className="max-w-7xl mx-auto w-full">
+              <div className="flex flex-wrap gap-2 mb-6">
+                <Button
+                  variant={activeSavedView === 'all' ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => handleApplySavedView('all')}
+                  className="gap-2"
+                >
+                  <span>👥</span> All Users
+                </Button>
+                <Button
+                  variant={activeSavedView === 'clients' ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => handleApplySavedView('clients', 'CLIENT')}
+                  className="gap-2"
+                >
+                  <span>🏢</span> Clients
+                </Button>
+                <Button
+                  variant={activeSavedView === 'team' ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => handleApplySavedView('team', 'TEAM_MEMBER')}
+                  className="gap-2"
+                >
+                  <span>👨‍💼</span> Team
+                </Button>
+                <Button
+                  variant={activeSavedView === 'admins' ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => handleApplySavedView('admins', 'ADMIN')}
+                  className="gap-2"
+                >
+                  <span>🔐</span> Admins
+                </Button>
+              </div>
+            </section>
+
             {/* Filters Section */}
             <section role="region" aria-label="User filters" className="max-w-7xl mx-auto w-full">
               <h2 className="text-lg font-semibold text-gray-900 mb-4">User Directory</h2>
               <AdvancedUserFilters
                 filters={filters}
                 onFiltersChange={setFilters}
-                onReset={() =>
-                  setFilters({
-                    search: '',
-                    role: undefined,
-                    status: undefined,
-                    department: undefined,
-                    dateRange: 'all'
-                  })
-                }
+                onReset={() => {
+                  handleApplySavedView('all')
+                }}
               />
             </section>
 
