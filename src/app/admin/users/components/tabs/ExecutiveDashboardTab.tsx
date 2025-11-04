@@ -415,6 +415,9 @@ export function ExecutiveDashboardTab({
           </div>
         </TabsContent>
       </Tabs>
+
+      {/* User Profile Dialog */}
+      <UserProfileDialog />
     </div>
   )
 }
