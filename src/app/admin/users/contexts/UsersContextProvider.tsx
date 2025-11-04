@@ -1,5 +1,7 @@
 'use client'
 
+'use client'
+
 import React, { createContext, useContext, useMemo, ReactNode } from 'react'
 import { UserDataContextProvider, useUserDataContext, UserStats, UserItem, HealthLog } from './UserDataContext'
 import { UserUIContextProvider, useUserUIContext } from './UserUIContext'
