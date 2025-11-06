@@ -115,25 +115,21 @@ export function BuilderSidebarSlot(props: Parameters<typeof AdminSidebar>[0]) {
   }
 
   if (isLoading) {
-    return <AdminSidebar {...props} /> // Show default while loading
+    return <AdminSidebar {...props} />
   }
 
   if (error) {
     console.warn(`Failed to load Builder.io sidebar content: ${error}`)
-    return <AdminSidebar {...props} /> // Fallback to default on error
+    return <AdminSidebar {...props} />
   }
 
   if (!content) {
-    return <AdminSidebar {...props} /> // No content available
+    return <AdminSidebar {...props} />
   }
 
   return (
     <div data-builder-model={BUILDER_MODELS.ADMIN_WORKBENCH_SIDEBAR}>
-      {content.blocks ? (
-        <div>{/* Render builder blocks */}</div>
-      ) : (
-        <AdminSidebar {...props} />
-      )}
+      {content.blocks ? renderBuilderBlocks(content.blocks) : <AdminSidebar {...props} />}
     </div>
   )
 }
