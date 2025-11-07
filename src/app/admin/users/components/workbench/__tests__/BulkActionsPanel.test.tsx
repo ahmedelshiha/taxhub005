@@ -252,6 +252,9 @@ describe('BulkActionsPanel', () => {
 
   describe('Disabled States', () => {
     it('should disable buttons during operation', async () => {
+      const mockFetch = vi.fn().mockImplementationOnce(() => new Promise(() => {}))
+      global.fetch = mockFetch
+
       const user = userEvent.setup()
       render(
         <BulkActionsPanel
@@ -261,14 +264,21 @@ describe('BulkActionsPanel', () => {
         />
       )
 
-      const previewButton = screen.getByRole('button', { name: /preview/i })
+      const previewButton = screen.getByTestId('preview-button')
       expect(previewButton).not.toBeDisabled()
 
-      // Simulate operation in progress
-      // This would typically be handled by loading state
+      const applyButton = screen.getByTestId('apply-button')
+      await user.click(applyButton)
+
+      await waitFor(() => {
+        expect(applyButton).toBeDisabled()
+      })
     })
 
-    it('should show loading state during bulk operation', async () => {
+    it('should show loading state text during bulk operation', async () => {
+      const mockFetch = vi.fn().mockImplementationOnce(() => new Promise(() => {}))
+      global.fetch = mockFetch
+
       const user = userEvent.setup()
       render(
         <BulkActionsPanel
@@ -278,11 +288,12 @@ describe('BulkActionsPanel', () => {
         />
       )
 
-      const previewButton = screen.getByRole('button', { name: /preview/i })
-      await user.click(previewButton)
+      const applyButton = screen.getByTestId('apply-button')
+      await user.click(applyButton)
 
-      // Component might show loading indicator
-      // Verification depends on implementation
+      await waitFor(() => {
+        expect(applyButton).toHaveTextContent('Applying...')
+      })
     })
   })
 
