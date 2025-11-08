@@ -92,16 +92,6 @@ export function QuickActionsBar({
               <RefreshCw className="w-5 h-5" />
             )}
           </Button>
-
-          <Button
-            disabled={isLoading}
-            variant="ghost"
-            className="text-gray-700 hover:bg-gray-100 h-10 w-10 p-0"
-            title="Audit trail"
-            aria-label="Audit trail"
-          >
-            <Settings className="w-5 h-5" />
-          </Button>
         </div>
       </div>
     </div>
