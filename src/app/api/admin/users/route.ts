@@ -1,4 +1,4 @@
-'''import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { withTenantContext } from '@/lib/api-wrapper'
 import { requireTenantContext } from '@/lib/tenant-utils'
 import prisma from '@/lib/prisma'
@@ -280,10 +280,10 @@ export const POST = withTenantContext(async (request: NextRequest) => {
     }
 
     const json = await request.json().catch(() => ({}))
-    const { name, email, role, password } = UserCreateSchema.parse(json)
+    const { name, email, role, temporaryPassword: password } = UserCreateSchema.parse(json)
 
     const existingUser = await prisma.user.findFirst({
-      where: tenantFilter(tenantId, { email })
+      where: { ...tenantFilter(tenantId), email: email }
     })
 
     if (existingUser) {
@@ -300,16 +300,13 @@ export const POST = withTenantContext(async (request: NextRequest) => {
       }
     })
 
-    const audit = new AuditLogService(ctx)
-    await audit.log('user.create', {
-      userId: newUser.id,
-      data: { name, email, role }
-    })
+    const audit = new AuditLogService()
+    await AuditLogService.createAuditLog({ tenantId: ctx.tenantId, action: 'user.create', userId: newUser.id, metadata: { name, email, role } })
 
     return NextResponse.json(newUser, { status: 201 })
   } catch (error: any) {
     console.error('Error creating user:', error)
-    return respond.internalServerError(error.message)
+    return respond.serverError('An internal server error occurred.')
   }
 })
 
@@ -340,10 +337,10 @@ export const PUT = withTenantContext(async (request: NextRequest) => {
     }
 
     const json = await request.json().catch(() => ({}))
-    const { name, email, role, password } = UserCreateSchema.parse(json)
+    const { name, email, role, temporaryPassword: password } = UserCreateSchema.parse(json)
 
     const existingUser = await prisma.user.findFirst({
-      where: tenantFilter(tenantId, { id: userId })
+      where: { ...tenantFilter(tenantId), id: userId }
     })
 
     if (!existingUser) {
@@ -360,16 +357,13 @@ export const PUT = withTenantContext(async (request: NextRequest) => {
       }
     })
 
-    const audit = new AuditLogService(ctx)
-    await audit.log('user.update', {
-      userId: updatedUser.id,
-      data: { name, email, role }
-    })
+    const audit = new AuditLogService()
+    await AuditLogService.createAuditLog({ tenantId: ctx.tenantId, action: 'user.update', userId: updatedUser.id, metadata: { name, email, role } })
 
     return NextResponse.json(updatedUser, { status: 200 })
   } catch (error: any) {
     console.error('Error updating user:', error)
-    return respond.internalServerError(error.message)
+    return respond.serverError('An internal server error occurred.')
   }
 })
-'''
+
