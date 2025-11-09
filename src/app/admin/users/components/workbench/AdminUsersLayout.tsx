@@ -64,6 +64,7 @@ export default function AdminUsersLayout() {
   const handleAddUser = () => {
     setShowCreateUserModal(false)
     setShowCreateUserInline(true)
+    setSidebarOpen(false)
   }
 
   const handleUserCreated = (userId: string) => {
@@ -195,10 +196,14 @@ export default function AdminUsersLayout() {
         <main className="admin-workbench-content" data-testid="admin-main-content">
           {showCreateUserInline ? (
             <InlineCreateUser
-              onBack={() => setShowCreateUserInline(false)}
+              onBack={() => {
+                setShowCreateUserInline(false)
+                setSidebarOpen(true)
+              }}
               onSuccess={(id: string) => {
                 toast.success('User created successfully')
                 setShowCreateUserInline(false)
+                setSidebarOpen(true)
                 context.refreshUsers?.()
               }}
             />
@@ -206,6 +211,7 @@ export default function AdminUsersLayout() {
             <InlineUserProfile
               onBack={() => {
                 setInlineProfileUser(null)
+                setSidebarOpen(true)
               }}
             />
           ) : (
@@ -224,6 +230,7 @@ export default function AdminUsersLayout() {
                   onViewProfileInline={(user) => {
                     context.setSelectedUser(user)
                     setInlineProfileUser(user)
+                    setSidebarOpen(false)
                   }}
                 />
               </div>

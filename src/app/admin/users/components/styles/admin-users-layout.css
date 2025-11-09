@@ -74,6 +74,10 @@
   transition: all 0.3s ease;
 }
 
+.admin-workbench-sidebar.closed {
+  display: none;
+}
+
 .admin-workbench-sidebar::-webkit-scrollbar {
   width: 6px;
 }
@@ -236,12 +240,6 @@
 /* ============================================================================
    ANIMATION & TRANSITIONS
    ============================================================================ */
-
-.admin-workbench-sidebar.closed {
-  opacity: 0;
-  pointer-events: none;
-  transform: translateX(-100%);
-}
 
 /* ============================================================================
    ACCESSIBILITY

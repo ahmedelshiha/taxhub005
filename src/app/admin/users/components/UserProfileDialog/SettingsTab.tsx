@@ -1,6 +1,6 @@
 'use client'
 
-import React, { memo, useCallback } from 'react'
+import React, { memo, useCallback, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Shield, Lock, LogOut, Bell, Trash2, Pause, Eye } from 'lucide-react'
@@ -16,14 +16,15 @@ import {
   AlertDialogAction,
   AlertDialogCancel
 } from '@/components/ui/alert-dialog'
-import { useState } from 'react'
+import { toast } from 'sonner'
+import { apiFetch } from '@/lib/api'
 
 interface SettingsTabProps {
   user: UserItem
 }
 
 export const SettingsTab = memo(function SettingsTab({ user }: SettingsTabProps) {
-  const { setPermissionModalOpen } = useUsersContext()
+  const { setPermissionModalOpen, permissionModalOpen, permissionsSaving } = useUsersContext()
   const [showDeactivateDialog, setShowDeactivateDialog] = useState(false)
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
 
@@ -31,15 +32,59 @@ export const SettingsTab = memo(function SettingsTab({ user }: SettingsTabProps)
     setPermissionModalOpen(true)
   }, [setPermissionModalOpen])
 
-  const handleDeactivate = useCallback(() => {
-    alert('User deactivation would be processed here')
-    setShowDeactivateDialog(false)
-  }, [])
+  const [isDeactivating, setIsDeactivating] = useState(false)
+  const [isDeleting, setIsDeleting] = useState(false)
 
-  const handleDelete = useCallback(() => {
-    alert('User deletion would be processed here')
-    setShowDeleteDialog(false)
-  }, [])
+  const handleDeactivate = useCallback(async () => {
+    setIsDeactivating(true)
+    const toastId = toast.loading('Deactivating user...')
+    try {
+      const res = await apiFetch(`/api/admin/users/${user.id}`, {
+        method: 'PATCH',
+        body: JSON.stringify({ status: 'INACTIVE' })
+      })
+
+      if (!res.ok) {
+        const error = await res.json().catch(() => ({}))
+        throw new Error(error.message || 'Failed to deactivate user')
+      }
+
+      toast.dismiss(toastId)
+      toast.success('User deactivated successfully')
+      setShowDeactivateDialog(false)
+    } catch (error) {
+      toast.dismiss(toastId)
+      const message = error instanceof Error ? error.message : 'Failed to deactivate user'
+      toast.error(message)
+    } finally {
+      setIsDeactivating(false)
+    }
+  }, [user.id])
+
+  const handleDelete = useCallback(async () => {
+    setIsDeleting(true)
+    const toastId = toast.loading('Deleting user...')
+    try {
+      const res = await apiFetch(`/api/admin/users/${user.id}`, {
+        method: 'DELETE'
+      })
+
+      if (!res.ok) {
+        const error = await res.json().catch(() => ({}))
+        throw new Error(error.message || 'Failed to delete user')
+      }
+
+      toast.dismiss(toastId)
+      toast.success('User deleted successfully')
+      setShowDeleteDialog(false)
+    } catch (error) {
+      toast.dismiss(toastId)
+      const message = error instanceof Error ? error.message : 'Failed to delete user'
+      toast.error(message)
+    } finally {
+      setIsDeleting(false)
+    }
+  }, [user.id])
 
   return (
     <div className="max-w-2xl space-y-8">
@@ -77,11 +122,15 @@ export const SettingsTab = memo(function SettingsTab({ user }: SettingsTabProps)
 
           <Button
             onClick={handleManagePermissions}
+            disabled={permissionsSaving}
             className="bg-blue-600 hover:bg-blue-700 text-white flex items-center gap-2"
           >
             <Shield className="h-4 w-4" />
-            Manage Permissions & Role
+            {permissionsSaving ? 'Updating Permissions...' : 'Manage Permissions & Role'}
           </Button>
+          <p className="text-xs text-slate-600 mt-3">
+            Click to open the permission management modal where you can assign roles and specific permissions to this user.
+          </p>
         </div>
       </section>
 
@@ -184,11 +233,12 @@ export const SettingsTab = memo(function SettingsTab({ user }: SettingsTabProps)
             </div>
             <Button
               variant="outline"
+              disabled={isDeactivating}
               className="w-full text-orange-700 border-orange-300 hover:bg-orange-100 flex items-center gap-2"
               onClick={() => setShowDeactivateDialog(true)}
             >
               <Pause className="h-4 w-4" />
-              Deactivate User
+              {isDeactivating ? 'Deactivating...' : 'Deactivate User'}
             </Button>
           </div>
         </div>
@@ -207,11 +257,12 @@ export const SettingsTab = memo(function SettingsTab({ user }: SettingsTabProps)
           </p>
           <Button
             variant="destructive"
+            disabled={isDeleting}
             className="w-full flex items-center gap-2"
             onClick={() => setShowDeleteDialog(true)}
           >
             <Trash2 className="h-4 w-4" />
-            Permanently Delete User
+            {isDeleting ? 'Deleting...' : 'Permanently Delete User'}
           </Button>
           <p className="text-xs text-red-700 mt-3">
             This will permanently remove the user and all associated data from the system.
@@ -229,9 +280,13 @@ export const SettingsTab = memo(function SettingsTab({ user }: SettingsTabProps)
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDeactivate} className="bg-orange-600 hover:bg-orange-700">
-              Deactivate
+            <AlertDialogCancel disabled={isDeactivating}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              disabled={isDeactivating}
+              onClick={handleDeactivate}
+              className="bg-orange-600 hover:bg-orange-700"
+            >
+              {isDeactivating ? 'Deactivating...' : 'Deactivate'}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -247,9 +302,13 @@ export const SettingsTab = memo(function SettingsTab({ user }: SettingsTabProps)
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDelete} className="bg-red-600 hover:bg-red-700">
-              Delete Permanently
+            <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              disabled={isDeleting}
+              onClick={handleDelete}
+              className="bg-red-600 hover:bg-red-700"
+            >
+              {isDeleting ? 'Deleting...' : 'Delete Permanently'}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

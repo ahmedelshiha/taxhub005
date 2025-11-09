@@ -7,6 +7,9 @@ import { OverviewTab } from '../UserProfileDialog/OverviewTab'
 import { DetailsTab } from '../UserProfileDialog/DetailsTab'
 import { ActivityTab } from '../UserProfileDialog/ActivityTab'
 import { SettingsTab } from '../UserProfileDialog/SettingsTab'
+import { useUserActions } from '../../hooks/useUserActions'
+import { toast } from 'sonner'
+import UnifiedPermissionModal from '@/components/admin/permissions/UnifiedPermissionModal'
 
 export default function InlineUserProfile({ onBack }: { onBack: () => void }) {
   const {
@@ -15,8 +18,23 @@ export default function InlineUserProfile({ onBack }: { onBack: () => void }) {
     setActiveTab,
     editMode,
     setEditMode,
-    setSelectedUser
+    setSelectedUser,
+    editForm,
+    setUpdating,
+    updating,
+    permissionModalOpen,
+    setPermissionModalOpen
   } = useUsersContext()
+
+  const { updateUser } = useUserActions({
+    onSuccess: (message) => {
+      toast.success(message)
+      setEditMode(false)
+    },
+    onError: (error) => {
+      toast.error(error)
+    }
+  })
 
   const handleBack = useCallback(() => {
     setEditMode(false)
@@ -25,14 +43,52 @@ export default function InlineUserProfile({ onBack }: { onBack: () => void }) {
     onBack()
   }, [onBack, setActiveTab, setEditMode, setSelectedUser])
 
+  const handleSaveProfile = useCallback(async () => {
+    if (!editForm?.name?.trim()) {
+      toast.error('Full name is required')
+      return
+    }
+    if (selectedUser?.id) {
+      setUpdating(true)
+      try {
+        await updateUser(selectedUser.id, editForm)
+      } catch (error) {
+        console.error('Update failed:', error)
+      } finally {
+        setUpdating(false)
+      }
+    }
+  }, [selectedUser?.id, editForm, updateUser, setUpdating])
+
   if (!selectedUser) return null
 
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <Button variant="outline" onClick={handleBack} className="mb-2">
-          ← Back to dashboard List
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button variant="outline" onClick={handleBack} className="mb-2">
+            ← Back to dashboard List
+          </Button>
+        </div>
+        {editMode && activeTab === 'details' && (
+          <div className="flex items-center gap-2 mb-2">
+            <Button
+              onClick={handleSaveProfile}
+              disabled={updating}
+              className="bg-blue-600 hover:bg-blue-700 text-white"
+            >
+              {updating ? 'Saving...' : 'Save Changes'}
+            </Button>
+            <Button
+              onClick={() => setEditMode(false)}
+              disabled={updating}
+              variant="outline"
+              className="border-slate-300 text-slate-700 hover:bg-slate-50"
+            >
+              Cancel
+            </Button>
+          </div>
+        )}
       </div>
 
       {/* Header */}
@@ -81,7 +137,7 @@ export default function InlineUserProfile({ onBack }: { onBack: () => void }) {
       <div className="bg-white border border-slate-200 rounded-lg overflow-hidden">
         <div className="flex">
           {/* Sidebar (desktop) */}
-          <nav className="w-64 bg-slate-900 text-white border-r border-slate-800 overflow-y-auto hidden sm:block">
+          <nav className="w-64 bg-white border-r border-gray-200 overflow-y-auto hidden sm:block">
             <div className="p-4 space-y-2">
               {([
                 { id: 'overview', label: 'Overview' },
@@ -95,7 +151,7 @@ export default function InlineUserProfile({ onBack }: { onBack: () => void }) {
                   className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg font-medium transition-all ${
                     activeTab === item.id
                       ? 'bg-blue-600 text-white shadow-lg'
-                      : 'text-slate-300 hover:bg-slate-800 hover:text-white'
+                      : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
                   }`}
                 >
                   <span>{item.label}</span>
@@ -115,6 +171,34 @@ export default function InlineUserProfile({ onBack }: { onBack: () => void }) {
           </div>
         </div>
       </div>
+
+      {/* Permission Modal */}
+      {permissionModalOpen && selectedUser && (
+        <UnifiedPermissionModal
+          mode="user"
+          targetId={selectedUser.id}
+          targetName={selectedUser.name || 'User'}
+          targetEmail={selectedUser.email}
+          currentRole={selectedUser.role}
+          currentPermissions={selectedUser.permissions || []}
+          onClose={() => setPermissionModalOpen(false)}
+          onSave={async (changes) => {
+            try {
+              const res = await fetch(`/api/admin/users/${selectedUser.id}/permissions`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(changes)
+              })
+              if (!res.ok) throw new Error('Failed to update permissions')
+              setPermissionModalOpen(false)
+              toast.success('Permissions updated successfully')
+            } catch (error) {
+              toast.error(error instanceof Error ? error.message : 'Failed to update permissions')
+              throw error
+            }
+          }}
+        />
+      )}
     </div>
   )
 }

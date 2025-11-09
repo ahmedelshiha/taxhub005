@@ -164,6 +164,25 @@ export const DetailsTab = memo(function DetailsTab({ user, isEditing }: DetailsT
             </div>
           </div>
         </section>
+
+        {/* Action Buttons */}
+        <section className="border-t border-slate-200 pt-6 flex items-center gap-3">
+          <Button
+            onClick={handleSave}
+            disabled={updating}
+            className="bg-blue-600 hover:bg-blue-700 text-white"
+          >
+            {updating ? 'Saving...' : 'Save Changes'}
+          </Button>
+          <Button
+            onClick={() => setEditMode(false)}
+            disabled={updating}
+            variant="outline"
+            className="border-slate-300 text-slate-700 hover:bg-slate-50"
+          >
+            Cancel
+          </Button>
+        </section>
       </div>
     )
   }
