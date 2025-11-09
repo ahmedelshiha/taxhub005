@@ -34,7 +34,7 @@ import '../styles/admin-users-layout.css'
  * │              │   │  UsersTable      │    │
  * │              │   │  (virtualized)   │    │
  * │              │   └──────────────────┘    │
- * ├──────────────┴──────────����─────────────────┤
+ * ├──────────────┴──────────���─────────────────┤
  * │  Sticky Footer: BulkActionsPanel (if sel) │
  * └────────────────���────────────────────────────┘
  * 
@@ -222,6 +222,7 @@ export default function AdminUsersLayout() {
                   onSelectionChange={setSelectedUserIds}
                   filters={filters}
                   onViewProfileInline={(user) => {
+                    context.setSelectedUser(user)
                     setInlineProfileUser(user)
                   }}
                 />
