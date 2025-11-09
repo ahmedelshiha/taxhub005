@@ -145,7 +145,7 @@ export default function UsersTableWrapper({
 
   return (
     <>
-      <div className="flex flex-col h-full overflow-hidden">
+      <div className="flex flex-col h-full w-full overflow-hidden">
         <DirectoryHeader
           selectedCount={selectedUserIds.size}
           onClearSelection={() => onSelectionChange?.(new Set())}
@@ -153,18 +153,20 @@ export default function UsersTableWrapper({
           onSidebarToggle={() => console.log('Toggle sidebar')}
         />
 
-        <UsersTable
-          users={filteredUsers}
-          isLoading={context.isLoading || context.usersLoading}
-          onViewProfile={handleViewProfile}
-          onRoleChange={handleRoleChange}
-          onEditInline={handleEditInline}
-          onDeleteUser={handleDeleteUser}
-          onResetPassword={handleResetPassword}
-          selectedUserIds={selectedUserIds}
-          onSelectUser={handleSelectUser}
-          onSelectAll={handleSelectAll}
-        />
+        <div className="flex-1 overflow-hidden min-h-0 w-full">
+          <UsersTable
+            users={filteredUsers}
+            isLoading={context.isLoading || context.usersLoading}
+            onViewProfile={handleViewProfile}
+            onRoleChange={handleRoleChange}
+            onEditInline={handleEditInline}
+            onDeleteUser={handleDeleteUser}
+            onResetPassword={handleResetPassword}
+            selectedUserIds={selectedUserIds}
+            onSelectUser={handleSelectUser}
+            onSelectAll={handleSelectAll}
+          />
+        </div>
       </div>
 
       {/* User Profile Dialog - gets state from context */}
