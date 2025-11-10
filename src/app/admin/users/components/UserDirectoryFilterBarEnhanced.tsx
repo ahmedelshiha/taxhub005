@@ -138,7 +138,8 @@ export function UserDirectoryFilterBarEnhanced({
 
   const handleCreatePreset = useCallback((name: string, filterState: FilterState, description?: string) => {
     createPreset(name, filterState, description)
-  }, [createPreset])
+    filterHistory.addEntry(filterState)
+  }, [createPreset, filterHistory])
 
   const handleApplyQuickFilter = useCallback((filterState: FilterState) => {
     onFiltersChange(filterState)
