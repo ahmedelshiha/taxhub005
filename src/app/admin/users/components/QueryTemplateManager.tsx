@@ -220,7 +220,7 @@ export function QueryTemplateManager({ onLoadTemplate }: QueryTemplateManagerPro
               onChange={(e) => setSearchQuery(e.target.value)}
             />
 
-            <ScrollArea className="h-96 border rounded-lg">
+            <div className="h-96 border rounded-lg overflow-y-auto">
               <div className="space-y-2 p-4">
                 {filteredTemplates
                   .filter(t => t.isBuiltIn)
@@ -236,7 +236,7 @@ export function QueryTemplateManager({ onLoadTemplate }: QueryTemplateManagerPro
                     />
                   ))}
               </div>
-            </ScrollArea>
+            </div>
           </TabsContent>
         </Tabs>
 
