@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/prisma'
+import prisma from '@/lib/prisma'
 import { logAuditSafe } from '@/lib/observability-helpers'
 import { withTenantContext } from '@/lib/api-wrapper'
 import { requireTenantContext } from '@/lib/tenant-utils'
-import { BankingProviderFactory } from '@/lib/banking/adapters'
+import { createBankingProvider } from '@/lib/banking/adapters'
 
 export const POST = withTenantContext(async (
   request: NextRequest,
