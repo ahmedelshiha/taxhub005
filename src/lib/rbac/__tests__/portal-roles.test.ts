@@ -232,7 +232,7 @@ describe('Portal RBAC System', () => {
       expect(canManageRole('CLIENT_OWNER', 'AUDITOR')).toBe(true) // Both are level 2, but different
       expect(canManageRole('CLIENT_OWNER', 'VIEWER')).toBe(true)
       expect(canManageRole('FINANCE_MANAGER', 'ACCOUNTANT')).toBe(true)
-      expect(canManageRole('ACCOUNTANT', 'VIEWER')).toBe(false) // Both level 3 and 1
+      expect(canManageRole('ACCOUNTANT', 'VIEWER')).toBe(true) // Level 3 can manage level 1
     })
 
     it('should prevent lower-level roles from managing higher-level roles', () => {
