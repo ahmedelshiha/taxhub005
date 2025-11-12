@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Plus, Search, ChevronRight, AlertCircle } from "lucide-react";
 import { PermissionGate } from "@/components/PermissionGate";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { PERMISSIONS } from "@/lib/permissions";
 import { logger } from "@/lib/logger";
 
 interface Entity {
@@ -70,7 +71,7 @@ export default function EntitiesPage() {
 
   return (
     <PermissionGate
-      permission="entity.read"
+      permission={PERMISSIONS.ENTITIES_READ}
       fallback={
         <div className="p-6 text-center">
           <p className="text-gray-600">
@@ -88,7 +89,7 @@ export default function EntitiesPage() {
               Manage business entities and tax registrations
             </p>
           </div>
-          <PermissionGate permission="entity.create">
+          <PermissionGate permission={PERMISSIONS.ENTITIES_CREATE}>
             <Link href="/admin/entities/new">
               <Button className="gap-2">
                 <Plus className="w-4 h-4" />
@@ -218,7 +219,7 @@ export default function EntitiesPage() {
                 ? "Try adjusting your filters"
                 : "Create your first entity to get started"}
             </p>
-            <PermissionGate permission="entity.create">
+            <PermissionGate permission={PERMISSIONS.ENTITIES_CREATE}>
               <Link href="/admin/entities/new" className="mt-4 inline-block">
                 <Button className="gap-2">
                   <Plus className="w-4 h-4" />
