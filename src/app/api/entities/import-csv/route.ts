@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { validateCsvData, processCsvImport, generateCsvTemplate } from '@/lib/csv/entity-importer';
 import { logger } from '@/lib/logger';
+import { logAuditSafe } from '@/lib/observability-helpers';
 import { withTenantContext } from '@/lib/api-wrapper';
 import { requireTenantContext } from '@/lib/tenant-utils';
 
