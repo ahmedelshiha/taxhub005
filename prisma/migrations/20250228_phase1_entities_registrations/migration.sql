@@ -36,9 +36,9 @@ CREATE TABLE IF NOT EXISTS "entities" (
   "updatedBy" TEXT,
 
   CONSTRAINT "entities_tenantId_name_key" UNIQUE("tenantId", "name"),
-  CONSTRAINT "entities_tenantId_fkey" FOREIGN KEY ("tenantId") REFERENCES "Tenant"("id") ON DELETE CASCADE,
-  CONSTRAINT "entities_createdBy_fkey" FOREIGN KEY ("createdBy") REFERENCES "User"("id") ON DELETE RESTRICT,
-  CONSTRAINT "entities_updatedBy_fkey" FOREIGN KEY ("updatedBy") REFERENCES "User"("id") ON DELETE SET NULL,
+  CONSTRAINT "entities_tenantId_fkey" FOREIGN KEY ("tenantId") REFERENCES "tenants"("id") ON DELETE CASCADE,
+  CONSTRAINT "entities_createdBy_fkey" FOREIGN KEY ("createdBy") REFERENCES "users"("id") ON DELETE RESTRICT,
+  CONSTRAINT "entities_updatedBy_fkey" FOREIGN KEY ("updatedBy") REFERENCES "users"("id") ON DELETE SET NULL,
   CONSTRAINT "entities_parentEntityId_fkey" FOREIGN KEY ("parentEntityId") REFERENCES "entities"("id") ON DELETE SET NULL
 );
 
