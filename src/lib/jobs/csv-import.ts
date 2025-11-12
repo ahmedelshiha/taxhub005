@@ -137,7 +137,7 @@ async function updateImportJobState(
 
     const updated = { ...state, ...updates };
     const key = `${JOB_STATE_PREFIX}${jobId}`;
-    await redis.setex(key, IMPORT_TIMEOUT / 1000, JSON.stringify(updated));
+    await redis.set(key, JSON.stringify(updated), { ex: IMPORT_TIMEOUT / 1000 });
 
     // Publish update event
     await redis.publish(JOB_CHANNEL, JSON.stringify({
