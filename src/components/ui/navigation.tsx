@@ -138,6 +138,9 @@ export function Navigation({
 
           {/* Desktop Auth & CTA */}
           <div className="hidden md:flex md:items-center md:space-x-4">
+            {/* Language Toggle */}
+            <LanguageToggle currentLocale={currentLocale} />
+
             {status === 'loading' ? (
               <div className="h-8 w-20 bg-gray-200 animate-pulse rounded"></div>
             ) : session ? (
