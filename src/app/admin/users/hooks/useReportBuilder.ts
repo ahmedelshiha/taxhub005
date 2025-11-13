@@ -27,7 +27,7 @@ export function useReportBuilder(options: UseReportBuilderOptions = {}) {
    */
   const createReport = useCallback((name: string, description?: string) => {
     const newReport: Report = {
-      id: crypto.getRandomUUID(),
+      id: crypto.randomUUID(),
       tenantId: '',
       userId: '',
       name,
@@ -90,7 +90,7 @@ export function useReportBuilder(options: UseReportBuilderOptions = {}) {
 
       const newSection: ReportSection = {
         ...section,
-        id: crypto.getRandomUUID(),
+        id: crypto.randomUUID(),
         order: report.sections.length
       }
 

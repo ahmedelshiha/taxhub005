@@ -12,6 +12,18 @@ import {
 } from '../types/report-builder'
 
 /**
+ * Escape HTML special characters
+ */
+function escapeHTMLChars(str: string): string {
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;')
+}
+
+/**
  * Generate report HTML from report definition and data
  */
 export function generateReportHTML(
@@ -25,7 +37,7 @@ export function generateReportHTML(
     <head>
       <meta charset="UTF-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>${escapeHTML(report.name)}</title>
+      <title>${escapeHTMLChars(report.name)}</title>
       <style>
         * {
           margin: 0;
@@ -253,8 +265,8 @@ export function generateReportHTML(
 function generateReportHeader(report: Report): string {
   return `
     <div class="report-header">
-      <div class="report-title">${escapeHTML(report.name)}</div>
-      ${report.description ? `<div class="report-description">${escapeHTML(report.description)}</div>` : ''}
+      <div class="report-title">${escapeHTMLChars(report.name)}</div>
+      ${report.description ? `<div class="report-description">${escapeHTMLChars(report.description)}</div>` : ''}
       <div class="report-metadata">
         <span>Generated: ${new Date().toLocaleDateString()}</span>
         <span>${report.headerText || 'User Directory Report'}</span>
@@ -280,7 +292,7 @@ function generateReportFooter(report: Report): string {
  */
 function generateSectionHTML(section: ReportSection, data: ReportData, index: number): string {
   let html = `<div class="report-section ${section.showPageBreak ? 'page-break' : ''}">`
-  html += `<h2 class="section-title">${escapeHTML(section.title)}</h2>`
+  html += `<h2 class="section-title">${escapeHTMLChars(section.title)}</h2>`
 
   switch (section.type) {
     case 'summary':
@@ -315,7 +327,7 @@ function generateSummarySectionHTML(section: ReportSection, data: ReportData): s
         .map(
           calc => `
         <div class="summary-item no-break">
-          <div class="summary-label">${escapeHTML(calc.label || calc.name)}</div>
+          <div class="summary-label">${escapeHTMLChars(calc.label || calc.name)}</div>
           <div class="summary-value">${formatSummaryValue(summary[calc.name])}</div>
         </div>
       `
@@ -339,7 +351,7 @@ function generateTableSectionHTML(section: ReportSection, data: ReportData): str
   let html = '<table><thead><tr>'
 
   visibleColumns.forEach(col => {
-    html += `<th>${escapeHTML(col.label)}</th>`
+    html += `<th>${escapeHTMLChars(col.label)}</th>`
   })
 
   html += '</tr></thead><tbody>'
@@ -351,7 +363,7 @@ function generateTableSectionHTML(section: ReportSection, data: ReportData): str
       html += '<tr>'
       visibleColumns.forEach(col => {
         const value = row[col.name] || ''
-        html += `<td>${escapeHTML(formatTableValue(value, col.type))}</td>`
+        html += `<td>${escapeHTMLChars(formatTableValue(value, col.type))}</td>`
       })
       html += '</tr>'
     })
@@ -373,7 +385,7 @@ function generateGroupedTableRows(
   let html = ''
   const groupKey = grouping[0].column
 
-  const grouped = rows.reduce(
+  const groupedData = rows.reduce(
     (acc, row) => {
       const key = row[groupKey]
       if (!acc[key]) acc[key] = []
@@ -383,14 +395,16 @@ function generateGroupedTableRows(
     {} as Record<string, any[]>
   )
 
-  Object.entries(grouped).forEach(([groupValue, groupRows]) => {
-    html += `<tr class="group-header"><td colspan="${columns.length}">${escapeHTML(groupValue)}</td></tr>`
+  const entries: Array<[string, any[]]> = Object.entries(groupedData)
+  entries.forEach(([groupValue, groupRows]) => {
+    const escapedGroupValue = escapeHTMLChars(String(groupValue))
+    html += `<tr class="group-header"><td colspan="${columns.length}">${escapedGroupValue}</td></tr>`
 
     groupRows.forEach(row => {
       html += '<tr>'
       columns.forEach(col => {
         const value = row[col.name] || ''
-        html += `<td>${escapeHTML(formatTableValue(value, col.type))}</td>`
+        html += `<td>${escapeHTMLChars(formatTableValue(value, col.type))}</td>`
       })
       html += '</tr>'
     })
@@ -413,7 +427,7 @@ function generateChartSectionHTML(section: ReportSection, data: ReportData): str
 
   return `
     <div class="chart-container">
-      <div class="chart-title">${escapeHTML(section.title)}</div>
+      <div class="chart-title">${escapeHTMLChars(section.title)}</div>
       <div class="chart-placeholder">
         [Chart: ${section.chartConfig.type.toUpperCase()}]
         <br/>
@@ -429,7 +443,7 @@ function generateChartSectionHTML(section: ReportSection, data: ReportData): str
 function formatSummaryValue(value: any): string {
   if (value === null || value === undefined) return '0'
   if (typeof value === 'number') return value.toLocaleString()
-  return escapeHTML(String(value))
+  return escapeHTMLChars(String(value || ''))
 }
 
 /**
@@ -564,7 +578,7 @@ export function applyGrouping(data: any[], grouping?: ReportGrouping[]): Record<
   const groupColumn = grouping[0].column
 
   data.forEach(row => {
-    const key = String(row[groupColumn])
+    const key = String(row[groupColumn] || '')
     if (!grouped[key]) {
       grouped[key] = []
     }
@@ -609,18 +623,6 @@ export function validateReportConfig(report: Partial<Report>): {
     valid: errors.length === 0,
     errors
   }
-}
-
-/**
- * Escape HTML special characters
- */
-function escapeHTML(str: string): string {
-  return String(str)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#039;')
 }
 
 /**
