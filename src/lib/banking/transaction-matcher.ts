@@ -279,7 +279,7 @@ export async function getMatchingStats(connectionId: string, tenantId: string) {
       matched: transactions.find((g) => g.matched === true)?._count || 0,
       unmatched: transactions.find((g) => g.matched === false)?._count || 0,
       totalAmount: transactions
-        .reduce((sum, group) => sum + parseFloat(group._sum?.amount || '0'), 0)
+        .reduce((sum, group) => sum + parseFloat(group._sum?.amount?.toString() || '0'), 0)
         .toFixed(2),
     },
     invoices: {
