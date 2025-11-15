@@ -16,7 +16,7 @@ export function getStripeClient(): Stripe {
       )
     }
     stripeInstance = new Stripe(apiKey, {
-      apiVersion: '2025-09-30',
+      apiVersion: '2025-09-30.clover',
     })
   }
   return stripeInstance
