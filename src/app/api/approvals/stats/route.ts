@@ -10,7 +10,17 @@ import { logger } from "@/lib/logger";
  */
 const _api_GET = async (request: NextRequest) => {
   try {
-    const ctx = requireTenantContext();
+    let ctx;
+    try {
+      ctx = requireTenantContext();
+    } catch (contextError) {
+      logger.error("Failed to get tenant context in GET /api/approvals/stats", { error: contextError });
+      return NextResponse.json(
+        { error: "Unauthorized", message: "Tenant context not available" },
+        { status: 401 }
+      );
+    }
+
     const { userId, tenantId } = ctx;
 
     if (!userId || !tenantId) {
