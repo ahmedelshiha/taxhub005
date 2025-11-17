@@ -7,10 +7,8 @@ import { z } from 'zod'
 
 const createInvoiceSchema = z.object({
   number: z.string().optional(),
-  description: z.string().optional(),
   amount: z.number().positive(),
   currency: z.string().default('USD'),
-  dueDate: z.string().datetime().optional(),
 })
 
 export const GET = withTenantContext(async (request: NextRequest) => {
