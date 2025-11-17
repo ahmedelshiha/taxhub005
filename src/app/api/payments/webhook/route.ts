@@ -53,7 +53,7 @@ const _api_POST = async (request: NextRequest) => {
   // Idempotency check using Stripe event ID
   const eventId = event.id
   if (!eventId) {
-    console.error('Stripe webhook: Missing event ID')
+    logger.error('Stripe webhook: Missing event ID')
     return NextResponse.json({ error: 'Missing event ID' }, { status: 400 })
   }
 
