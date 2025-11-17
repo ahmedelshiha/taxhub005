@@ -39,13 +39,6 @@ export class ReactError31Boundary extends Component<ReactError31BoundaryProps, R
                           error.message.includes('render')
 
     if (isReactError31) {
-      console.error('🚨 React Error #31 Detected:', {
-        errorMessage: error.message,
-        componentStack: errorInfo.componentStack,
-        errorStack: error.stack,
-        timestamp: new Date().toISOString()
-      })
-
       // Enhanced logging for debugging
       logger.error('React Error #31 caught by boundary', {
         errorName: error.name,
@@ -64,6 +57,7 @@ export class ReactError31Boundary extends Component<ReactError31BoundaryProps, R
         errorName: error.name,
         errorMessage: error.message,
         componentStack: errorInfo.componentStack,
+        errorStack: error.stack,
         reactError31: false
       }, error)
     }
