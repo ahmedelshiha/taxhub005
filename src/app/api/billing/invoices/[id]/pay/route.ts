@@ -51,9 +51,8 @@ export const POST = withTenantContext(
       const updatedInvoice = await prisma.invoice.update({
         where: { id: invoiceId },
         data: {
-          status: amountToPay >= invoice.totalCents ? 'PAID' : 'PARTIALLY_PAID',
+          status: amountToPay >= invoice.totalCents ? 'PAID' : 'UNPAID',
           paidAt: new Date(),
-          paymentReference: paymentData.reference,
         },
       })
 
