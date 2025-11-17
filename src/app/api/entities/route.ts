@@ -161,9 +161,29 @@ const _api_POST = async (request: NextRequest) => {
       );
     }
 
-    logger.error("Error creating entity", { error });
+    const errorMsg = error instanceof Error ? error.message : String(error);
+    const errorStack = error instanceof Error ? error.stack : undefined;
+
+    logger.error("Error creating entity", {
+      error: errorMsg,
+      userId,
+      tenantId,
+    });
+
+    // Log to console for production debugging
+    console.error("[ENTITIES_API_ERROR] POST failed:", {
+      message: errorMsg,
+      stack: errorStack,
+      userId,
+      tenantId,
+    });
+
     return NextResponse.json(
-      { error: "Internal server error" },
+      {
+        error: "Internal server error",
+        message: errorMsg,
+        ...(process.env.NODE_ENV === 'development' && { details: errorStack }),
+      },
       { status: 500 }
     );
   }
