@@ -27,6 +27,8 @@ export interface FilteredUsersResponse {
   page: number
   limit: number
   totalPages: number
+  isStale?: boolean
+  staleSince?: FilteredUsersResponse
 }
 
 /**
@@ -55,11 +57,7 @@ export function useFilteredUsers(
   )
 
   // Fetcher function
-  const fetcher = useCallback(async (key: string) => {
-    if (!enabled) {
-      return null
-    }
-
+  const fetcher = useCallback(async (key: string): Promise<FilteredUsersResponse> => {
     const opId = `fetch-users-${Date.now()}`
     globalPerformanceMonitor.startTimer(opId)
 
@@ -132,12 +130,12 @@ export function useFilteredUsers(
       })
       throw error
     }
-  }, [enabled, useCache, filters, cacheTtl])
+  }, [useCache, filters, cacheTtl])
 
   // Use SWR for data fetching
-  const { data, error, isLoading, mutate } = useSWR<FilteredUsersResponse>(
+  const { data, error, isLoading, mutate } = useSWR<FilteredUsersResponse | undefined>(
     enabled ? cacheKey : null,
-    fetcher,
+    enabled ? fetcher : null,
     {
       revalidateOnFocus: false,
       revalidateOnReconnect: true,

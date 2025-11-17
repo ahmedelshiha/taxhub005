@@ -35,12 +35,12 @@ export const POST = withTenantContext(async (request: NextRequest, { params }: {
 
     // Cast sections to properly handle Prisma JSON types
     const sections = Array.isArray(report.sections) ? (report.sections as unknown as ReportSection[]) : []
-    const typedReport = {
+    const typedReport: Report = {
       id: report.id,
       tenantId: report.tenantId,
       userId: report.userId,
       name: report.name,
-      description: report.description,
+      description: report.description ?? undefined,
       sections: sections,
       createdAt: report.createdAt.toISOString(),
       updatedAt: report.updatedAt.toISOString()
@@ -171,9 +171,9 @@ function generateExcelReport(report: any, reportData: any): string {
       { name: 'role', label: 'Role' },
       { name: 'availabilityStatus', label: 'Status' }
     ]
-    tsv += columns.map(c => c.label).join('\t') + '\n'
+    tsv += columns.map((c: any) => c.label).join('\t') + '\n'
     reportData.rows.forEach((row: any) => {
-      tsv += columns.map(c => row[c.name] || '').join('\t') + '\n'
+      tsv += columns.map((c: any) => row[c.name] || '').join('\t') + '\n'
     })
   }
   return tsv

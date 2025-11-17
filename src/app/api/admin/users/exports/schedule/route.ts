@@ -19,8 +19,13 @@ export const GET = withTenantContext(async (request: NextRequest) => {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }
 
+    const whereClause: any = {}
+    if (context.tenantId) {
+      whereClause.tenantId = context.tenantId
+    }
+
     const schedules = await prisma.exportSchedule.findMany({
-      where: { tenantId: context.tenantId },
+      where: whereClause,
       include: { _count: { select: { executions: true } } },
       orderBy: { createdAt: 'desc' }
     })
@@ -47,6 +52,15 @@ export const POST = withTenantContext(async (request: NextRequest) => {
     }
 
     const context = tenantContext.getContext()
+
+    if (!context.tenantId) {
+      return NextResponse.json({ error: 'Tenant context is required' }, { status: 400 })
+    }
+
+    if (!context.userId) {
+      return NextResponse.json({ error: 'User context is required' }, { status: 400 })
+    }
+
     const hasAccess = await hasPermission(context.userId, PERMISSIONS.USERS_EXPORT)
     if (!hasAccess) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 })

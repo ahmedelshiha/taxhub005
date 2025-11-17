@@ -385,7 +385,7 @@ function generateGroupedTableRows(
   let html = ''
   const groupKey = grouping[0].column
 
-  const grouped = rows.reduce(
+  const groupedData = rows.reduce(
     (acc, row) => {
       const key = row[groupKey]
       if (!acc[key]) acc[key] = []
@@ -395,11 +395,12 @@ function generateGroupedTableRows(
     {} as Record<string, any[]>
   )
 
-  Object.entries(grouped).forEach(([groupValue, groupRows]: [string, unknown[]]) => {
-    const escapedGroupValue = escapeHTMLChars(groupValue as string)
+  const entries: Array<[string, any[]]> = Object.entries(groupedData)
+  entries.forEach(([groupValue, groupRows]) => {
+    const escapedGroupValue = escapeHTMLChars(String(groupValue))
     html += `<tr class="group-header"><td colspan="${columns.length}">${escapedGroupValue}</td></tr>`
 
-    (groupRows as Array<Record<string, unknown>>).forEach(row => {
+    groupRows.forEach(row => {
       html += '<tr>'
       columns.forEach(col => {
         const value = row[col.name] || ''
