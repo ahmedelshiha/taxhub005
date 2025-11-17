@@ -1,11 +1,9 @@
-
 import prisma from "@/lib/prisma";
 import { logger } from "@/lib/logger";
 import { getCountry, CountryCode } from "@/lib/registries/countries";
 import { Redis } from "@upstash/redis";
 
-
-export type VerificationJobStatus = 
+export type VerificationJobStatus =
   | "PENDING_VERIFICATION"
   | "VERIFYING_LICENSE"
   | "VERIFYING_REGISTRATIONS"
@@ -34,10 +32,30 @@ export interface VerificationResult {
   };
 }
 
-const redis = new Redis({
-  url: process.env.UPSTASH_REDIS_REST_URL!,
-  token: process.env.UPSTASH_REDIS_REST_TOKEN!,
-});
+let redisClient: Redis | null = null;
+let redisInitialized = false;
+let redisError: Error | null = null;
+
+function getRedisClient(): Redis {
+  if (redisError) {
+    throw redisError;
+  }
+
+  if (!redisClient) {
+    try {
+      redisClient = new Redis({
+        url: process.env.UPSTASH_REDIS_REST_URL || "",
+        token: process.env.UPSTASH_REDIS_REST_TOKEN || "",
+      });
+      redisInitialized = true;
+    } catch (error) {
+      redisError = error instanceof Error ? error : new Error(String(error));
+      throw redisError;
+    }
+  }
+
+  return redisClient;
+}
 
 const JOB_STATE_PREFIX = "entity-setup:";
 const JOB_CHANNEL = "entity-setup:events";
