@@ -332,15 +332,17 @@ export async function publishEvent(
   payload: VerificationJobState | Record<string, unknown>
 ): Promise<void> {
   try {
+    const redis = getRedisClient();
     const event = JSON.stringify({
       type: eventType,
       timestamp: new Date().toISOString(),
       ...payload,
     });
-    
+
     await (redis as any).publish(JOB_CHANNEL, event);
   } catch (error) {
     logger.error("Failed to publish verification event", { eventType, error });
+    // Don't throw - event publishing is non-critical
   }
 }
 
