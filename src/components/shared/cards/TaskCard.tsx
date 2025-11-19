@@ -71,6 +71,7 @@ export default function TaskCard({
     IN_REVIEW: 'bg-purple-100 text-purple-800',
     COMPLETED: 'bg-green-100 text-green-800',
     BLOCKED: 'bg-red-100 text-red-800',
+    ON_HOLD: 'bg-orange-100 text-orange-800',
     CANCELLED: 'bg-gray-100 text-gray-800',
   }
 
@@ -81,7 +82,7 @@ export default function TaskCard({
     URGENT: 'bg-red-50 text-red-700',
   }
 
-  const dueDate = task.dueAt ? new Date(task.dueAt) : null
+  const dueDate = task.dueDate ? new Date(task.dueDate) : null
   const isOverdue = dueDate && dueDate < new Date()
 
   // Compact variant
@@ -193,18 +194,18 @@ export default function TaskCard({
         )}
 
         {/* Progress (if applicable) */}
-        {task.progress != null && (
+        {task.completionPercentage != null && (
           <div className="pt-2 border-t">
             <div className="flex items-center justify-between text-sm mb-1">
               <span className="text-gray-600">Progress</span>
-              <span className="font-medium">{task.progress}%</span>
+              <span className="font-medium">{task.completionPercentage}%</span>
             </div>
             <div className="w-full bg-gray-200 rounded-full h-2">
               <div
                 className="bg-blue-600 h-2 rounded-full transition-all"
-                style={{ width: `${task.progress}%` }}
+                style={{ width: `${task.completionPercentage}%` }}
                 role="progressbar"
-                aria-valuenow={task.progress}
+                aria-valuenow={task.completionPercentage}
                 aria-valuemin={0}
                 aria-valuemax={100}
               />
