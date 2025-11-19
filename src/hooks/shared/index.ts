@@ -7,6 +7,7 @@ export { useDocuments, type DocumentFilters, type UseDocumentsResponse } from '.
 export { useInvoices, type InvoiceFilters, type UseInvoicesResponse } from './useInvoices'
 export { useMessages, type MessageFilters, type UseMessagesResponse } from './useMessages'
 export { useApprovals, type ApprovalFilters, type UseApprovalsResponse } from './useApprovals'
+export { useAvailabilityRealtime, useAvailabilitySlots, type AvailabilitySlot } from './useAvailabilityRealtime'
 
 // State management hooks
 export { useFilters, type FilterValue } from './useFilters'
