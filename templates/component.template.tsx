@@ -1,9 +1,12 @@
 'use client'
 
 import { ReactNode } from 'react'
-import { cn } from '@/lib/cn'
+import { usePermissions } from '@/lib/use-permissions'
 
-interface BaseComponentProps {
+/**
+ * Props for {{ComponentName}} component
+ */
+interface {{ComponentName}}Props {
   /**
    * Component variant for different display modes
    * @default 'default'
@@ -11,23 +14,18 @@ interface BaseComponentProps {
   variant?: 'portal' | 'admin' | 'default'
 
   /**
-   * Additional CSS class names
+   * CSS class name for custom styling
    */
   className?: string
 
   /**
-   * Children elements
-   */
-  children?: ReactNode
-
-  /**
-   * Loading state
+   * Loading state indicator
    * @default false
    */
   loading?: boolean
 
   /**
-   * Error message to display
+   * Error state and message
    */
   error?: string | null
 
@@ -36,67 +34,108 @@ interface BaseComponentProps {
    * @default false
    */
   disabled?: boolean
+
+  /**
+   * Child elements to render
+   */
+  children?: ReactNode
+
+  /**
+   * Callback when component is interacted with
+   */
+  onInteract?: () => void
 }
 
 /**
- * BaseComponent
+ * {{ComponentDescription}}
  *
- * Supports both portal and admin variants. Handles loading, error, and empty states.
+ * This component is part of the shared component library and can be used in both
+ * portal and admin areas. Use the `variant` prop to customize behavior for different contexts.
  *
- * @example
+ * @example Portal usage
  * ```tsx
- * <BaseComponent variant="portal" loading={isLoading}>
- *   {children}
- * </BaseComponent>
+ * <{{ComponentName}} variant="portal" />
  * ```
  *
- * @example
+ * @example Admin usage
  * ```tsx
- * <BaseComponent
- *   variant="admin"
- *   error={errorMessage}
- * >
- *   {children}
- * </BaseComponent>
+ * <{{ComponentName}} variant="admin" onInteract={() => console.log('Clicked')} />
+ * ```
+ *
+ * @example With loading state
+ * ```tsx
+ * <{{ComponentName}} loading={isLoading} error={errorMessage} />
  * ```
  */
-export function BaseComponent({
+export function {{ComponentName}}({
   variant = 'default',
-  className,
-  children,
+  className = '',
   loading = false,
   error = null,
   disabled = false,
-}: BaseComponentProps) {
+  children,
+  onInteract,
+}: {{ComponentName}}Props) {
+  const { can } = usePermissions()
+
+  // Show loading state
   if (loading) {
     return (
-      <div className="flex items-center justify-center p-4">
-        <div className="text-sm text-muted-foreground">Loading...</div>
+      <div className={`${className} opacity-50`}>
+        <div className="flex items-center justify-center">
+          <div className="animate-spin">Loading...</div>
+        </div>
       </div>
     )
   }
 
+  // Show error state
   if (error) {
     return (
-      <div className="rounded-md border border-destructive/50 bg-destructive/10 p-4">
-        <p className="text-sm text-destructive">{error}</p>
+      <div className={`${className} p-4 bg-red-50 border border-red-200 rounded-md`}>
+        <p className="text-red-800 text-sm font-medium">Error</p>
+        <p className="text-red-700 text-sm mt-1">{error}</p>
+      </div>
+    )
+  }
+
+  // Portal variant (limited functionality)
+  if (variant === 'portal' && !can('resource:interact')) {
+    return (
+      <div className={`${className} p-4 bg-gray-50 border border-gray-200 rounded-md`}>
+        <p className="text-gray-600 text-sm">You don't have permission to interact with this component</p>
       </div>
     )
   }
 
   return (
     <div
-      className={cn(
-        'rounded-lg border border-gray-200',
-        variant === 'admin' && 'bg-slate-50',
-        variant === 'portal' && 'bg-white',
-        disabled && 'opacity-50 cursor-not-allowed',
-        className
-      )}
+      className={`${className} {{component-base-class}}`}
+      onClick={onInteract}
+      role="{{component-role}}"
+      aria-label="{{component-name}}"
     >
+      {variant === 'admin' && (
+        <div className="admin-section">
+          {/* Admin-only content */}
+        </div>
+      )}
+
+      {variant === 'portal' && (
+        <div className="portal-section">
+          {/* Portal-specific content */}
+        </div>
+      )}
+
+      {variant === 'default' && (
+        <div className="default-section">
+          {/* Default content */}
+        </div>
+      )}
+
       {children}
     </div>
   )
 }
 
-export default BaseComponent
+export default {{ComponentName}}
