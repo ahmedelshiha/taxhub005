@@ -3,6 +3,7 @@ import { withTenantContext } from '@/lib/api-wrapper'
 import { respond } from '@/lib/api-response'
 import { TaskUpdateSchema } from '@/schemas/shared/entities/task'
 import { prisma } from '@/lib/prisma'
+import { logAudit } from '@/lib/audit'
 import { z } from 'zod'
 
 /**
