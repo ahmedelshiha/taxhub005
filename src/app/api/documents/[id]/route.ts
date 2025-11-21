@@ -70,7 +70,7 @@ export const GET = withTenantAuth(async (request, context) => {
     }
 
     // Authorization check - portal users can only see their own documents
-    if (user.role !== 'ADMIN' && document.uploaderId !== user.id) {
+    if (userRole !== 'ADMIN' && document.uploaderId !== userId) {
       return respond.forbidden('You do not have access to this document')
     }
 
@@ -98,7 +98,7 @@ export const GET = withTenantAuth(async (request, context) => {
     }
 
     // Admin gets additional details
-    if (user.role === 'ADMIN') {
+    if (userRole === 'ADMIN') {
       return respond.ok({
         data: {
           ...baseData,
