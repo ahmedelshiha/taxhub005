@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { withTenantContext } from '@/lib/api-wrapper'
+import { requireTenantContext } from '@/lib/tenant-utils'
 import { respond } from '@/lib/api-response'
 import { TaskStatusSchema, TaskPrioritySchema } from '@/schemas/shared/entities/task'
 import prisma from '@/lib/prisma'
