@@ -48,7 +48,11 @@ export function useTeamMembers(filters: TeamMembersFilters = {}) {
 
   const { data, error, mutate, isLoading } = useSWR<TeamMembersResponse>(
     key,
-    (url) => apiFetch(url) as Promise<TeamMembersResponse>,
+    async (url) => {
+      const response = await apiFetch(url)
+      if (!response.ok) throw new Error(`${response.status}: ${response.statusText}`)
+      return response.json()
+    },
     {
       revalidateOnFocus: false,
       revalidateOnReconnect: true,
@@ -73,7 +77,11 @@ export function useTeamMembers(filters: TeamMembersFilters = {}) {
 export function useTeamMember(memberId: string | null | undefined) {
   const { data, error, mutate, isLoading } = useSWR<{ data: TeamMember }>(
     memberId ? `/api/users/${memberId}` : null,
-    (url) => apiFetch(url) as Promise<{ data: TeamMember }>,
+    async (url) => {
+      const response = await apiFetch(url)
+      if (!response.ok) throw new Error(`${response.status}: ${response.statusText}`)
+      return response.json()
+    },
     {
       revalidateOnFocus: false,
       dedupingInterval: 30000,
