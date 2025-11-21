@@ -391,7 +391,7 @@ export default function AdminServiceRequestDetailPage() {
               <div className="text-gray-500">No tasks linked yet.</div>
             ) : (
               <div className="space-y-2">
-                {tasks.map((t: any) => (
+                {tasks.map((t: { id: string; title: string; priority?: string; dueAt?: string; assignee?: { name?: string } }) => (
                   <div key={t.id} className="border rounded-lg p-3 bg-white flex items-center justify-between">
                     <div>
                       <div className="font-medium text-gray-900">{t.title}</div>
