@@ -13,7 +13,7 @@ const SignRequestSchema = z.object({
     x: z.number(),
     y: z.number(),
   })).min(1, 'At least one signature field is required'),
-  expiresIn: z.number().int().positive().optional().default(30), // Days
+  expiresIn: z.number().int().positive().optional().default(30),
   requireBiometric: z.boolean().optional().default(false),
 })
 
@@ -23,8 +23,9 @@ type SignRequest = z.infer<typeof SignRequestSchema>
  * POST /api/documents/[id]/sign
  * Request document signature (e-signature flow)
  */
-export const POST = withTenantAuth(async (request, { tenantId, user }, { params }) => {
+export const POST = withTenantAuth(async (request: any, { params }: any) => {
   try {
+    const { userId, tenantId, userRole } = request as any
     const document = await prisma.attachment.findFirst({
       where: {
         id: params.id,
@@ -46,7 +47,7 @@ export const POST = withTenantAuth(async (request, { tenantId, user }, { params 
     }
 
     // Authorization - admin or document uploader
-    if (user.role !== 'ADMIN' && document.uploaderId !== user.id) {
+    if (userRole !== 'ADMIN' && document.uploaderId !== userId) {
       return respond.forbidden('You do not have permission to request signatures on this document')
     }
 
@@ -88,7 +89,7 @@ export const POST = withTenantAuth(async (request, { tenantId, user }, { params 
     const signatureRequest = await prisma.documentSignatureRequest?.create?.({
       data: {
         attachmentId: params.id,
-        requestedBy: user.id,
+        requestedBy: userId,
         signerEmail: signData.signerEmail,
         signerName: signData.signerName,
         signerId: signer.id,
@@ -105,10 +106,10 @@ export const POST = withTenantAuth(async (request, { tenantId, user }, { params 
       data: {
         tenantId,
         action: 'documents:request_signature',
-        userId: user.id,
-        resourceType: 'Document',
-        resourceId: document.id,
-        details: {
+        userId,
+        resource: 'Document',
+        metadata: {
+          documentId: document.id,
           signerEmail: signData.signerEmail,
           signerName: signData.signerName,
           fieldCount: signData.signatureFields.length,
@@ -130,7 +131,7 @@ export const POST = withTenantAuth(async (request, { tenantId, user }, { params 
         signatureFields: signData.signatureFields,
         status: 'pending',
         expiresAt,
-        signingLink: `/sign/${signatureRequest?.id || 'temp'}`, // Would be actual signing link
+        signingLink: `/sign/${signatureRequest?.id || 'temp'}`,
         createdAt: new Date(),
       },
     })
@@ -147,8 +148,9 @@ export const POST = withTenantAuth(async (request, { tenantId, user }, { params 
  * PUT /api/documents/[id]/sign
  * Sign a document
  */
-export const PUT = withTenantAuth(async (request, { tenantId, user }, { params }) => {
+export const PUT = withTenantAuth(async (request: any, { params }: any) => {
   try {
+    const { userId, tenantId } = request as any
     const document = await prisma.attachment.findFirst({
       where: {
         id: params.id,
@@ -163,7 +165,7 @@ export const PUT = withTenantAuth(async (request, { tenantId, user }, { params }
     const body = await request.json()
     const SignSchema = z.object({
       signatureRequestId: z.string(),
-      signatureData: z.string(), // Base64 encoded signature
+      signatureData: z.string(),
       timestamp: z.string().datetime(),
     })
 
@@ -174,7 +176,7 @@ export const PUT = withTenantAuth(async (request, { tenantId, user }, { params }
       where: { id: signatureRequestId },
     }).catch(() => null)
 
-    if (!sigRequest || (sigRequest as any).signerId !== user.id) {
+    if (!sigRequest || (sigRequest as any).signerId !== userId) {
       return respond.forbidden('Invalid signature request')
     }
 
@@ -187,8 +189,8 @@ export const PUT = withTenantAuth(async (request, { tenantId, user }, { params }
       data: {
         documentId: params.id,
         signatureRequestId,
-        signedBy: user.id,
-        signatureData, // Store encrypted in production
+        signedBy: userId,
+        signatureData,
         timestamp: new Date(timestamp),
         signedAt: new Date(),
         tenantId,
@@ -209,9 +211,9 @@ export const PUT = withTenantAuth(async (request, { tenantId, user }, { params }
       where: { id: params.id },
       data: {
         metadata: {
-          ...document.metadata,
+          ...(typeof document.metadata === 'object' ? document.metadata : {}),
           signed: true,
-          signedBy: user.id,
+          signedBy: userId,
           signedAt: new Date().toISOString(),
           signatureRequestId,
         },
@@ -223,10 +225,10 @@ export const PUT = withTenantAuth(async (request, { tenantId, user }, { params }
       data: {
         tenantId,
         action: 'documents:signed',
-        userId: user.id,
-        resourceType: 'Document',
-        resourceId: document.id,
-        details: {
+        userId,
+        resource: 'Document',
+        metadata: {
+          documentId: document.id,
           signatureRequestId,
           timestamp,
         },
@@ -255,8 +257,9 @@ export const PUT = withTenantAuth(async (request, { tenantId, user }, { params }
  * GET /api/documents/[id]/sign
  * Get signature requests for a document
  */
-export const GET = withTenantAuth(async (request, { tenantId, user }, { params }) => {
+export const GET = withTenantAuth(async (request: any, { params }: any) => {
   try {
+    const { userId, tenantId, userRole } = request as any
     const document = await prisma.attachment.findFirst({
       where: {
         id: params.id,
@@ -269,7 +272,7 @@ export const GET = withTenantAuth(async (request, { tenantId, user }, { params }
     }
 
     // Authorization - admin or document uploader
-    if (user.role !== 'ADMIN' && document.uploaderId !== user.id) {
+    if (userRole !== 'ADMIN' && document.uploaderId !== userId) {
       return respond.forbidden('You do not have access to signature requests for this document')
     }
 
