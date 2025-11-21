@@ -184,7 +184,6 @@ export default function AdminServiceRequestDetailPage() {
       if (typeof window !== 'undefined') {
         const message = `Service request successfully converted to booking #${data.booking.id.slice(-8).toUpperCase()}`
         // You could show a toast here if available
-        console.log(message)
         
         // Redirect to the new booking
         router.push(`/admin/bookings/${data.bookingId}`)
