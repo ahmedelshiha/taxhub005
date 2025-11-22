@@ -121,13 +121,13 @@ export const GET = withTenantContext(
       // Get cached services
       const result = await getCachedServices(request)
 
-      if (!result || !result?.services) {
+      if (!result || !Array.isArray(result?.services)) {
         return respond.ok(
           { services: [], total: 0, page: 0, limit: 20, totalPages: 0 }
         )
       }
 
-      return respond.ok(result)
+      return respond.ok(result as any)
     } catch (error) {
       logger.error('Failed to fetch services', { error })
       if (error instanceof Error && error.message.includes('Zod')) {
