@@ -1456,7 +1456,8 @@ EXCEPTION
 END $$;
 
 -- CreateTable
-CREATE TABLE "banking_transactions" (
+DO $$ BEGIN
+    CREATE TABLE "banking_transactions" (
     "id" TEXT NOT NULL,
     "connectionId" TEXT NOT NULL,
     "tenantId" TEXT NOT NULL,
@@ -1476,10 +1477,14 @@ CREATE TABLE "banking_transactions" (
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "banking_transactions_pkey" PRIMARY KEY ("id")
-);
+    );
+EXCEPTION
+    WHEN duplicate_table THEN null;
+END $$;
 
 -- CreateTable
-CREATE TABLE "invoices" (
+DO $$ BEGIN
+    CREATE TABLE "invoices" (
     "id" TEXT NOT NULL,
     "tenantId" TEXT NOT NULL,
     "bookingId" TEXT,
@@ -1494,10 +1499,14 @@ CREATE TABLE "invoices" (
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "invoices_pkey" PRIMARY KEY ("id")
-);
+    );
+EXCEPTION
+    WHEN duplicate_table THEN null;
+END $$;
 
 -- CreateTable
-CREATE TABLE "invoice_items" (
+DO $$ BEGIN
+    CREATE TABLE "invoice_items" (
     "id" TEXT NOT NULL,
     "invoiceId" TEXT NOT NULL,
     "description" TEXT NOT NULL,
@@ -1506,10 +1515,14 @@ CREATE TABLE "invoice_items" (
     "totalCents" INTEGER NOT NULL DEFAULT 0,
 
     CONSTRAINT "invoice_items_pkey" PRIMARY KEY ("id")
-);
+    );
+EXCEPTION
+    WHEN duplicate_table THEN null;
+END $$;
 
 -- CreateTable
-CREATE TABLE "expenses" (
+DO $$ BEGIN
+    CREATE TABLE "expenses" (
     "id" TEXT NOT NULL,
     "tenantId" TEXT NOT NULL,
     "vendor" TEXT NOT NULL,
@@ -1524,10 +1537,14 @@ CREATE TABLE "expenses" (
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "expenses_pkey" PRIMARY KEY ("id")
-);
+    );
+EXCEPTION
+    WHEN duplicate_table THEN null;
+END $$;
 
 -- CreateTable
-CREATE TABLE "chat_messages" (
+DO $$ BEGIN
+    CREATE TABLE "chat_messages" (
     "id" TEXT NOT NULL,
     "tenantId" TEXT NOT NULL,
     "room" TEXT,
@@ -1538,10 +1555,14 @@ CREATE TABLE "chat_messages" (
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "chat_messages_pkey" PRIMARY KEY ("id")
-);
+    );
+EXCEPTION
+    WHEN duplicate_table THEN null;
+END $$;
 
 -- CreateTable
-CREATE TABLE "IdempotencyKey" (
+DO $$ BEGIN
+    CREATE TABLE "IdempotencyKey" (
     "id" SERIAL NOT NULL,
     "key" TEXT NOT NULL,
     "userId" TEXT,
@@ -1554,10 +1575,14 @@ CREATE TABLE "IdempotencyKey" (
     "expiresAt" TIMESTAMP(3),
 
     CONSTRAINT "IdempotencyKey_pkey" PRIMARY KEY ("id")
-);
+    );
+EXCEPTION
+    WHEN duplicate_table THEN null;
+END $$;
 
 -- CreateTable
-CREATE TABLE "setting_change_diffs" (
+DO $$ BEGIN
+    CREATE TABLE "setting_change_diffs" (
     "id" TEXT NOT NULL,
     "tenantId" TEXT NOT NULL,
     "userId" TEXT,
@@ -1568,7 +1593,10 @@ CREATE TABLE "setting_change_diffs" (
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "setting_change_diffs_pkey" PRIMARY KEY ("id")
-);
+    );
+EXCEPTION
+    WHEN duplicate_table THEN null;
+END $$;
 
 -- CreateTable
 CREATE TABLE "favorite_settings" (
