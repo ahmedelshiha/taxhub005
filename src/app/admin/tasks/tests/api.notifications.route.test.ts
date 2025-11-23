@@ -22,11 +22,11 @@ describe('api/admin/tasks/notifications route', () => {
   it('reads and updates notification settings', async () => {
     const mod: Record<string, unknown> = await import('@/app/api/admin/tasks/notifications/route')
 
-    const getRes: Response = await (mod.GET as Function)()
+    const getRes: Response = await (mod.GET as () => Promise<Response>)()
     const settings: Record<string, unknown> = await getRes.json()
     expect(typeof (settings as any).emailEnabled).toBe('boolean')
 
-    const patchRes: Response = await (mod.PATCH as Function)(new Request('https://x', { method: 'PATCH', body: JSON.stringify({ emailEnabled: true, emailFrom: 'noreply@example.com' }) }))
+    const patchRes: Response = await (mod.PATCH as (request: Request) => Promise<Response>)(new Request('https://x', { method: 'PATCH', body: JSON.stringify({ emailEnabled: true, emailFrom: 'noreply@example.com' }) }))
     expect(patchRes.status).toBe(200)
     const updated: Record<string, unknown> = await patchRes.json()
     expect((updated as any).emailEnabled).toBe(true)

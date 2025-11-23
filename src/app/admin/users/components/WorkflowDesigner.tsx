@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { AlertTriangle, CheckCircle, Play, Save, Send } from 'lucide-react'
-import { Workflow, WorkflowNode, WorkflowSimulation, workflowDesignerService } from '@/services/workflow-designer.service'
+import { Workflow, WorkflowNode, WorkflowSimulation, NodeType, workflowDesignerService } from '@/services/workflow-designer.service'
 import { NodeLibrary } from './NodeLibrary'
 import { WorkflowCanvas } from './WorkflowCanvas'
 import { WorkflowSimulator } from './WorkflowSimulator'
@@ -40,7 +40,7 @@ export function WorkflowDesigner({
   const handleAddNode = (nodeType: string) => {
     const newNode: WorkflowNode = {
       id: `node-${Date.now()}`,
-      type: nodeType,
+      type: nodeType as NodeType,
       label: `${nodeType.charAt(0).toUpperCase() + nodeType.slice(1)}`,
       x: 100 + Math.random() * 200,
       y: 100 + Math.random() * 200,

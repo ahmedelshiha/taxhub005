@@ -16,23 +16,23 @@ vi.mock('@/lib/prisma', () => {
 describe('api/admin/tasks/bulk route', () => {
   it('validates input', async () => {
     const { POST }: Record<string, unknown> = await import('@/app/api/admin/tasks/bulk/route')
-    const res: Response = await (POST as Function)(new Request('https://x', { method: 'POST', body: JSON.stringify({}) }))
+    const res: Response = await (POST as (request: Request) => Promise<Response>)(new Request('https://x', { method: 'POST', body: JSON.stringify({}) }))
     expect(res.status).toBe(400)
   })
 
   it('performs delete/update/assign actions', async () => {
     const { POST }: Record<string, unknown> = await import('@/app/api/admin/tasks/bulk/route')
 
-    const del: Response = await (POST as Function)(new Request('https://x', { method: 'POST', body: JSON.stringify({ action: 'delete', taskIds: ['1'] }) }))
+    const del: Response = await (POST as (request: Request) => Promise<Response>)(new Request('https://x', { method: 'POST', body: JSON.stringify({ action: 'delete', taskIds: ['1'] }) }))
     expect(del.status).toBe(200)
 
-    const upd: Response = await (POST as Function)(new Request('https://x', { method: 'POST', body: JSON.stringify({ action: 'update', taskIds: ['1'], updates: { status: 'DONE' } }) }))
+    const upd: Response = await (POST as (request: Request) => Promise<Response>)(new Request('https://x', { method: 'POST', body: JSON.stringify({ action: 'update', taskIds: ['1'], updates: { status: 'DONE' } }) }))
     expect(upd.status).toBe(200)
 
-    const asg: Response = await (POST as Function)(new Request('https://x', { method: 'POST', body: JSON.stringify({ action: 'assign', taskIds: ['1'], updates: { assigneeId: 'u1' } }) }))
+    const asg: Response = await (POST as (request: Request) => Promise<Response>)(new Request('https://x', { method: 'POST', body: JSON.stringify({ action: 'assign', taskIds: ['1'], updates: { assigneeId: 'u1' } }) }))
     expect(asg.status).toBe(200)
 
-    const unk: Response = await (POST as Function)(new Request('https://x', { method: 'POST', body: JSON.stringify({ action: 'noop', taskIds: ['1'] }) }))
+    const unk: Response = await (POST as (request: Request) => Promise<Response>)(new Request('https://x', { method: 'POST', body: JSON.stringify({ action: 'noop', taskIds: ['1'] }) }))
     expect(unk.status).toBe(400)
   })
 })

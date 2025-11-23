@@ -4,7 +4,7 @@ import React from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { Workflow } from '@/services/workflow-designer.service'
+import { Workflow, BottleneckAnalysis, ValidationError } from '@/services/workflow-designer.service'
 import { TrendingUp, AlertTriangle, Zap } from 'lucide-react'
 
 interface WorkflowAnalyticsProps {
@@ -306,15 +306,13 @@ function NodeTypeBar({
 function BottleneckItem({
   bottleneck
 }: {
-  bottleneck: Record<string, unknown>
+  bottleneck: BottleneckAnalysis
 }) {
-  const node = { id: bottleneck.nodeId }
-
   return (
     <div className="p-3 bg-white rounded border border-amber-200">
       <div className="flex items-start justify-between">
         <div>
-          <p className="font-semibold text-sm text-amber-900">Node: {node.id}</p>
+          <p className="font-semibold text-sm text-amber-900">Node: {bottleneck.nodeId}</p>
           <p className="text-sm text-amber-800 mt-1">{bottleneck.reason}</p>
         </div>
         <Badge className="bg-amber-200 text-amber-900">{bottleneck.estimatedTime}s</Badge>
@@ -354,7 +352,7 @@ function IssueSection({
 function IssueItem({
   item
 }: {
-  item: Record<string, unknown>
+  item: ValidationError
 }) {
   return (
     <div className="text-sm p-2 bg-red-50 rounded border border-red-200">

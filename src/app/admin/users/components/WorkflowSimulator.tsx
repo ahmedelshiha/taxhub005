@@ -274,12 +274,12 @@ function ExecutionStepItem({
               <p>{step.error}</p>
             </div>
           )}
-          {step.output && (
+          {step.output ? (
             <div className="bg-gray-100 p-2 rounded text-xs font-mono overflow-auto max-h-40">
               <p className="font-semibold text-gray-800 mb-1">Output:</p>
-              <pre>{JSON.stringify(step.output, null, 2)}</pre>
+              <pre>{JSON.stringify(step.output as Record<string, unknown>, null, 2)}</pre>
             </div>
-          )}
+          ) : null}
         </div>
       )}
     </div>
