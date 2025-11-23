@@ -250,7 +250,7 @@ function MostUsedFiltersChart({
     )
   }
 
-  const maxUsage = Math.max(...stats.map(s => s.usageCount))
+  const maxUsage = Math.max(...stats.map(s => (s as any).usageCount as number))
 
   return (
     <div className="space-y-4">
@@ -303,15 +303,18 @@ function FilterCombinationsTable({
           </tr>
         </thead>
         <tbody>
-          {combinations.map((combo, idx) => (
+          {combinations.map((combo, idx) => {
+            const typedCombo = combo as any
+            return (
             <tr key={idx} className="border-b hover:bg-gray-50">
-              <td className="py-2 px-3">{combo.combination}</td>
-              <td className="text-right py-2 px-3">{combo.frequency}</td>
+              <td className="py-2 px-3">{typedCombo.combination}</td>
+              <td className="text-right py-2 px-3">{typedCombo.frequency}</td>
               <td className="text-right py-2 px-3">
-                {combo.avgResultCount.toFixed(0)}
+                {(typedCombo.avgResultCount as number).toFixed(0)}
               </td>
             </tr>
-          ))}
+          )
+          })}
         </tbody>
       </table>
     </div>
@@ -350,16 +353,19 @@ function UserEngagementTable({
           </tr>
         </thead>
         <tbody>
-          {metrics.map((metric, idx) => (
+          {metrics.map((metric, idx) => {
+            const typedMetric = metric as any
+            return (
             <tr key={idx} className="border-b hover:bg-gray-50">
-              <td className="py-2 px-3">{metric.role}</td>
-              <td className="text-right py-2 px-3">{metric.filterUsageCount}</td>
+              <td className="py-2 px-3">{typedMetric.role}</td>
+              <td className="text-right py-2 px-3">{typedMetric.filterUsageCount}</td>
               <td className="text-right py-2 px-3">
-                {metric.averageFiltersPerSession.toFixed(1)}
+                {(typedMetric.averageFiltersPerSession as number).toFixed(1)}
               </td>
-              <td className="text-right py-2 px-3">{metric.uniqueFiltersUsed}</td>
+              <td className="text-right py-2 px-3">{typedMetric.uniqueFiltersUsed}</td>
             </tr>
-          ))}
+          )
+          })}
         </tbody>
       </table>
     </div>
@@ -382,25 +388,26 @@ function PerformanceMetricsPanel({
     return <div className="text-center text-gray-400">Loading...</div>
   }
 
-  const isOptimal = metrics.averageFilterTime < 500
+  const typedMetrics = metrics as any
+  const isOptimal = (typedMetrics.averageFilterTime as number) < 500
 
   return (
     <div className="grid gap-4 grid-cols-1 md:grid-cols-2">
       <div className="space-y-2">
         <p className="text-sm text-muted-foreground">Average Filter Time</p>
-        <p className="text-2xl font-bold">{metrics.averageFilterTime.toFixed(0)}ms</p>
+        <p className="text-2xl font-bold">{((typedMetrics.averageFilterTime as number) ?? 0).toFixed(0)}ms</p>
       </div>
       <div className="space-y-2">
         <p className="text-sm text-muted-foreground">95th Percentile</p>
-        <p className="text-2xl font-bold">{metrics.p95FilterTime.toFixed(0)}ms</p>
+        <p className="text-2xl font-bold">{((typedMetrics.p95FilterTime as number) ?? 0).toFixed(0)}ms</p>
       </div>
       <div className="space-y-2">
         <p className="text-sm text-muted-foreground">99th Percentile</p>
-        <p className="text-2xl font-bold">{metrics.p99FilterTime.toFixed(0)}ms</p>
+        <p className="text-2xl font-bold">{((typedMetrics.p99FilterTime as number) ?? 0).toFixed(0)}ms</p>
       </div>
       <div className="space-y-2">
         <p className="text-sm text-muted-foreground">Slow Queries</p>
-        <p className="text-2xl font-bold">{metrics.slowFilterCount}</p>
+        <p className="text-2xl font-bold">{typedMetrics.slowFilterCount}</p>
       </div>
       <div className="col-span-full">
         <p className={`text-sm font-medium ${isOptimal ? 'text-green-600' : 'text-amber-600'}`}>
@@ -436,13 +443,13 @@ function PresetAdoptionPanel({
         <div className="flex justify-between items-center mb-2">
           <p className="text-sm font-medium">Adoption Rate</p>
           <span className="text-2xl font-bold">
-            {metrics.adoptionRate.toFixed(1)}%
+            {((metrics as any).adoptionRate as number).toFixed(1)}%
           </span>
         </div>
         <div className="w-full bg-gray-200 rounded-full h-2">
           <div
             className="bg-blue-500 h-2 rounded-full transition-all"
-            style={{ width: `${metrics.adoptionRate}%` }}
+            style={{ width: `${(metrics as any).adoptionRate}%` }}
           />
         </div>
       </div>
@@ -451,27 +458,27 @@ function PresetAdoptionPanel({
       <div className="grid gap-4 grid-cols-3">
         <div>
           <p className="text-sm text-muted-foreground">Total Presets</p>
-          <p className="text-2xl font-bold">{metrics.totalPresets}</p>
+          <p className="text-2xl font-bold">{(metrics as any).totalPresets}</p>
         </div>
         <div>
           <p className="text-sm text-muted-foreground">Used</p>
-          <p className="text-2xl font-bold">{metrics.usedPresets}</p>
+          <p className="text-2xl font-bold">{(metrics as any).usedPresets}</p>
         </div>
         <div>
           <p className="text-sm text-muted-foreground">Unused</p>
-          <p className="text-2xl font-bold">{metrics.unusedPresets}</p>
+          <p className="text-2xl font-bold">{(metrics as any).unusedPresets}</p>
         </div>
       </div>
 
       {/* Top Presets */}
-      {metrics.topPresets.length > 0 && (
+      {((metrics as any).topPresets?.length ?? 0) > 0 && (
         <div>
           <p className="text-sm font-medium mb-3">Top Presets</p>
           <div className="space-y-2">
-            {metrics.topPresets.map((preset: Record<string, unknown>, idx: number) => (
+            {((metrics as any).topPresets || []).map((preset: Record<string, unknown>, idx: number) => (
               <div key={idx} className="flex justify-between items-center text-sm p-2 bg-gray-50 rounded">
-                <span>{preset.name}</span>
-                <span className="font-medium">{preset.usageCount} uses</span>
+                <span>{(preset as any).name}</span>
+                <span className="font-medium">{(preset as any).usageCount} uses</span>
               </div>
             ))}
           </div>
