@@ -1880,136 +1880,164 @@ EXCEPTION
 END $$;
 
 -- CreateTable
-CREATE TABLE "menu_customizations" (
-    "id" TEXT NOT NULL,
-    "userId" TEXT NOT NULL,
-    "practiceItems" JSONB NOT NULL DEFAULT '[]',
-    "bookmarks" JSONB NOT NULL DEFAULT '[]',
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
-    "sectionOrder" JSONB NOT NULL DEFAULT '[]',
-    "hiddenItems" JSONB NOT NULL DEFAULT '[]',
+DO $$ BEGIN
+    CREATE TABLE "menu_customizations" (
+        "id" TEXT NOT NULL,
+        "userId" TEXT NOT NULL,
+        "practiceItems" JSONB NOT NULL DEFAULT '[]',
+        "bookmarks" JSONB NOT NULL DEFAULT '[]',
+        "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        "updatedAt" TIMESTAMP(3) NOT NULL,
+        "sectionOrder" JSONB NOT NULL DEFAULT '[]',
+        "hiddenItems" JSONB NOT NULL DEFAULT '[]',
 
-    CONSTRAINT "menu_customizations_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "permission_audits" (
-    "id" TEXT NOT NULL,
-    "tenantId" TEXT NOT NULL,
-    "userId" TEXT NOT NULL,
-    "changedBy" TEXT NOT NULL,
-    "oldRole" VARCHAR(100),
-    "newRole" VARCHAR(100),
-    "permissionsAdded" JSONB NOT NULL DEFAULT '[]',
-    "permissionsRemoved" JSONB NOT NULL DEFAULT '[]',
-    "reason" TEXT,
-    "metadata" JSONB,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-
-    CONSTRAINT "permission_audits_pkey" PRIMARY KEY ("id")
-);
+        CONSTRAINT "menu_customizations_pkey" PRIMARY KEY ("id")
+    );
+EXCEPTION
+    WHEN duplicate_table THEN null;
+END $$;
 
 -- CreateTable
-CREATE TABLE "permission_templates" (
-    "id" TEXT NOT NULL,
-    "tenantId" TEXT NOT NULL,
-    "name" VARCHAR(100) NOT NULL,
-    "description" TEXT,
-    "icon" VARCHAR(50),
-    "color" VARCHAR(20),
-    "permissions" JSONB NOT NULL DEFAULT '[]',
-    "isCustom" BOOLEAN NOT NULL DEFAULT true,
-    "isActive" BOOLEAN NOT NULL DEFAULT true,
-    "createdBy" TEXT NOT NULL,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
+DO $$ BEGIN
+    CREATE TABLE "permission_audits" (
+        "id" TEXT NOT NULL,
+        "tenantId" TEXT NOT NULL,
+        "userId" TEXT NOT NULL,
+        "changedBy" TEXT NOT NULL,
+        "oldRole" VARCHAR(100),
+        "newRole" VARCHAR(100),
+        "permissionsAdded" JSONB NOT NULL DEFAULT '[]',
+        "permissionsRemoved" JSONB NOT NULL DEFAULT '[]',
+        "reason" TEXT,
+        "metadata" JSONB,
+        "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
-    CONSTRAINT "permission_templates_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "custom_roles" (
-    "id" TEXT NOT NULL,
-    "tenantId" TEXT NOT NULL,
-    "name" VARCHAR(100) NOT NULL,
-    "description" TEXT,
-    "color" VARCHAR(20),
-    "icon" VARCHAR(50),
-    "permissions" JSONB NOT NULL DEFAULT '[]',
-    "isActive" BOOLEAN NOT NULL DEFAULT true,
-    "createdBy" TEXT NOT NULL,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
-
-    CONSTRAINT "custom_roles_pkey" PRIMARY KEY ("id")
-);
+        CONSTRAINT "permission_audits_pkey" PRIMARY KEY ("id")
+    );
+EXCEPTION
+    WHEN duplicate_table THEN null;
+END $$;
 
 -- CreateTable
-CREATE TABLE "user_workflows" (
-    "id" TEXT NOT NULL,
-    "tenantId" TEXT NOT NULL,
-    "userId" TEXT NOT NULL,
-    "type" "WorkflowType" NOT NULL,
-    "status" "WorkflowStatus" NOT NULL DEFAULT 'DRAFT',
-    "triggeredBy" TEXT NOT NULL,
-    "approvedBy" TEXT,
-    "startedAt" TIMESTAMP(3),
-    "completedAt" TIMESTAMP(3),
-    "scheduledFor" TIMESTAMP(3),
-    "totalSteps" INTEGER NOT NULL,
-    "completedSteps" INTEGER NOT NULL DEFAULT 0,
-    "progressPercent" INTEGER NOT NULL DEFAULT 0,
-    "errorMessage" TEXT,
-    "retryCount" INTEGER NOT NULL DEFAULT 0,
-    "lastErrorAt" TIMESTAMP(3),
-    "dueAt" TIMESTAMP(3),
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
+DO $$ BEGIN
+    CREATE TABLE "permission_templates" (
+        "id" TEXT NOT NULL,
+        "tenantId" TEXT NOT NULL,
+        "name" VARCHAR(100) NOT NULL,
+        "description" TEXT,
+        "icon" VARCHAR(50),
+        "color" VARCHAR(20),
+        "permissions" JSONB NOT NULL DEFAULT '[]',
+        "isCustom" BOOLEAN NOT NULL DEFAULT true,
+        "isActive" BOOLEAN NOT NULL DEFAULT true,
+        "createdBy" TEXT NOT NULL,
+        "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        "updatedAt" TIMESTAMP(3) NOT NULL,
 
-    CONSTRAINT "user_workflows_pkey" PRIMARY KEY ("id")
-);
+        CONSTRAINT "permission_templates_pkey" PRIMARY KEY ("id")
+    );
+EXCEPTION
+    WHEN duplicate_table THEN null;
+END $$;
 
 -- CreateTable
-CREATE TABLE "workflow_steps" (
-    "id" TEXT NOT NULL,
-    "workflowId" TEXT NOT NULL,
-    "stepNumber" INTEGER NOT NULL,
-    "name" TEXT NOT NULL,
-    "description" TEXT,
-    "actionType" TEXT NOT NULL,
-    "status" "StepStatus" NOT NULL DEFAULT 'PENDING',
-    "config" JSONB,
-    "startedAt" TIMESTAMP(3),
-    "completedAt" TIMESTAMP(3),
-    "durationMs" INTEGER,
-    "errorMessage" TEXT,
-    "requiresApproval" BOOLEAN NOT NULL DEFAULT false,
-    "approvedAt" TIMESTAMP(3),
-    "approvedBy" TEXT,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
+DO $$ BEGIN
+    CREATE TABLE "custom_roles" (
+        "id" TEXT NOT NULL,
+        "tenantId" TEXT NOT NULL,
+        "name" VARCHAR(100) NOT NULL,
+        "description" TEXT,
+        "color" VARCHAR(20),
+        "icon" VARCHAR(50),
+        "permissions" JSONB NOT NULL DEFAULT '[]',
+        "isActive" BOOLEAN NOT NULL DEFAULT true,
+        "createdBy" TEXT NOT NULL,
+        "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        "updatedAt" TIMESTAMP(3) NOT NULL,
 
-    CONSTRAINT "workflow_steps_pkey" PRIMARY KEY ("id")
-);
+        CONSTRAINT "custom_roles_pkey" PRIMARY KEY ("id")
+    );
+EXCEPTION
+    WHEN duplicate_table THEN null;
+END $$;
 
 -- CreateTable
-CREATE TABLE "workflow_templates" (
-    "id" TEXT NOT NULL,
-    "tenantId" TEXT NOT NULL,
-    "name" VARCHAR(100) NOT NULL,
-    "description" TEXT,
-    "type" "WorkflowType" NOT NULL,
-    "steps" JSONB NOT NULL,
-    "requiresApproval" BOOLEAN NOT NULL DEFAULT false,
-    "approvalEmails" TEXT[],
-    "isActive" BOOLEAN NOT NULL DEFAULT true,
-    "createdBy" TEXT NOT NULL,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
+DO $$ BEGIN
+    CREATE TABLE "user_workflows" (
+        "id" TEXT NOT NULL,
+        "tenantId" TEXT NOT NULL,
+        "userId" TEXT NOT NULL,
+        "type" "WorkflowType" NOT NULL,
+        "status" "WorkflowStatus" NOT NULL DEFAULT 'DRAFT',
+        "triggeredBy" TEXT NOT NULL,
+        "approvedBy" TEXT,
+        "startedAt" TIMESTAMP(3),
+        "completedAt" TIMESTAMP(3),
+        "scheduledFor" TIMESTAMP(3),
+        "totalSteps" INTEGER NOT NULL,
+        "completedSteps" INTEGER NOT NULL DEFAULT 0,
+        "progressPercent" INTEGER NOT NULL DEFAULT 0,
+        "errorMessage" TEXT,
+        "retryCount" INTEGER NOT NULL DEFAULT 0,
+        "lastErrorAt" TIMESTAMP(3),
+        "dueAt" TIMESTAMP(3),
+        "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        "updatedAt" TIMESTAMP(3) NOT NULL,
 
-    CONSTRAINT "workflow_templates_pkey" PRIMARY KEY ("id")
-);
+        CONSTRAINT "user_workflows_pkey" PRIMARY KEY ("id")
+    );
+EXCEPTION
+    WHEN duplicate_table THEN null;
+END $$;
+
+-- CreateTable
+DO $$ BEGIN
+    CREATE TABLE "workflow_steps" (
+        "id" TEXT NOT NULL,
+        "workflowId" TEXT NOT NULL,
+        "stepNumber" INTEGER NOT NULL,
+        "name" TEXT NOT NULL,
+        "description" TEXT,
+        "actionType" TEXT NOT NULL,
+        "status" "StepStatus" NOT NULL DEFAULT 'PENDING',
+        "config" JSONB,
+        "startedAt" TIMESTAMP(3),
+        "completedAt" TIMESTAMP(3),
+        "durationMs" INTEGER,
+        "errorMessage" TEXT,
+        "requiresApproval" BOOLEAN NOT NULL DEFAULT false,
+        "approvedAt" TIMESTAMP(3),
+        "approvedBy" TEXT,
+        "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        "updatedAt" TIMESTAMP(3) NOT NULL,
+
+        CONSTRAINT "workflow_steps_pkey" PRIMARY KEY ("id")
+    );
+EXCEPTION
+    WHEN duplicate_table THEN null;
+END $$;
+
+-- CreateTable
+DO $$ BEGIN
+    CREATE TABLE "workflow_templates" (
+        "id" TEXT NOT NULL,
+        "tenantId" TEXT NOT NULL,
+        "name" VARCHAR(100) NOT NULL,
+        "description" TEXT,
+        "type" "WorkflowType" NOT NULL,
+        "steps" JSONB NOT NULL,
+        "requiresApproval" BOOLEAN NOT NULL DEFAULT false,
+        "approvalEmails" TEXT[],
+        "isActive" BOOLEAN NOT NULL DEFAULT true,
+        "createdBy" TEXT NOT NULL,
+        "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        "updatedAt" TIMESTAMP(3) NOT NULL,
+
+        CONSTRAINT "workflow_templates_pkey" PRIMARY KEY ("id")
+    );
+EXCEPTION
+    WHEN duplicate_table THEN null;
+END $$;
 
 -- CreateTable
 CREATE TABLE "workflow_notifications" (
