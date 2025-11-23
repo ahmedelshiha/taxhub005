@@ -2,17 +2,17 @@
 
 import React, { createContext, useContext, useEffect, useState, useCallback, useRef } from 'react'
 import { apiFetch } from '@/lib/api'
-import type { Task, TaskPriority, TaskStatus } from '@/lib/tasks/types'
+import type { Task, TaskPriority, TaskStatus, CreateTaskInput, UpdateTaskInput } from '@/lib/tasks/types'
 
-type TaskEvent = { type: string, payload?: any }
+type TaskEvent = { type: string; payload?: Record<string, unknown> }
 
 interface TaskContextValue {
   tasks: Task[]
   loading: boolean
   error: string | null
   refresh: () => Promise<void>
-  createTask: (input: any) => Promise<Task | null>
-  updateTask: (id: string, updates: any) => Promise<Task | null>
+  createTask: (input: CreateTaskInput) => Promise<Task | null>
+  updateTask: (id: string, updates: UpdateTaskInput) => Promise<Task | null>
   deleteTask: (id: string) => Promise<boolean>
 }
 
@@ -45,7 +45,7 @@ const mapPriorityToDb = (p: TaskPriority): string => {
 }
 
 // Normalize DB task to UI Task shape to avoid runtime crashes
-const toUiTask = (row: any): Task => {
+const toUiTask = (row: Record<string, unknown>): Task => {
   const assignee = row.assignee ? { id: row.assignee.id, name: row.assignee.name || row.assignee.email || 'User', email: row.assignee.email || '', role: 'STAFF' } : undefined
   return {
     id: row.id,
@@ -134,7 +134,7 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   }, [fetchTasks])
 
-  const createTask = useCallback(async (input: any) => {
+  const createTask = useCallback(async (input: CreateTaskInput) => {
     setError(null)
     const tempId = 'tmp_' + Date.now()
     const nowIso = new Date().toISOString()
@@ -207,13 +207,13 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   }, [])
 
-  const updateTask = useCallback(async (id: string, updates: any) => {
+  const updateTask = useCallback(async (id: string, updates: UpdateTaskInput) => {
     setError(null)
     let previous: Task | undefined
     setTasks(prev => prev.map(t => { if (t.id === id) { previous = t; return { ...t, ...updates, updatedAt: new Date().toISOString() } } return t }))
     try {
       // Map UI enums to DB enums for PATCH
-      const body: any = { ...updates }
+      const body: Record<string, unknown> = { ...updates }
       if (updates.status) body.status = mapStatusToDb(updates.status)
       if (updates.priority) body.priority = mapPriorityToDb(updates.priority)
       if (updates.dueDate) { body.dueAt = updates.dueDate; delete body.dueDate }

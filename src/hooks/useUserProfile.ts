@@ -1,7 +1,8 @@
 "use client"
 
 import { useCallback, useEffect, useState } from "react"
-import apiFetch from "@/lib/api"
+import { apiFetch } from "@/lib/api"
+import { toast } from "sonner"
 
 export interface UserProfile {
   id?: string
@@ -25,7 +26,8 @@ export function useUserProfile() {
       const res = await apiFetch('/api/users/me')
       if (!res.ok) throw new Error(`Failed to load profile (${res.status})`)
       const data = await res.json()
-      setProfile(data)
+      const next = (data && typeof data === 'object' && 'user' in data) ? (data as any).user : data
+      setProfile(next)
     } catch (e: any) {
       setError(String(e?.message || e))
     } finally {
@@ -40,8 +42,11 @@ export function useUserProfile() {
       const res = await apiFetch('/api/users/me', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(patch) })
       if (!res.ok) throw new Error(`Failed to update profile (${res.status})`)
       const data = await res.json()
-      setProfile(data)
-      return data
+      const next = (data && typeof data === 'object' && 'user' in data) ? (data as any).user : data
+      setProfile(next)
+      try { const { announce } = await import('@/lib/a11y'); announce('Profile updated') } catch {}
+      try { toast.success('Profile updated') } catch {}
+      return next
     } catch (e: any) {
       setError(String(e?.message || e))
       throw e
@@ -50,7 +55,9 @@ export function useUserProfile() {
     }
   }, [])
 
-  useEffect(() => { refresh() }, [refresh])
+  useEffect(() => {
+    refresh()
+  }, [])
 
   return { profile, loading, error, refresh, update }
 }

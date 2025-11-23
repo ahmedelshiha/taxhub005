@@ -15,6 +15,7 @@ import { useOrgSettings } from '@/components/providers/SettingsProvider'
 import { useSidebarKeyboardShortcuts } from '@/hooks/admin/useSidebarKeyboardShortcuts'
 import { useSidebarState, useSidebarActions } from '@/stores/admin/layout.store.selectors'
 import SidebarLiveRegion from '@/components/admin/layout/SidebarLiveRegion'
+import { type Locale } from '@/lib/i18n'
 
 interface ClientLayoutProps {
   children: React.ReactNode
@@ -24,6 +25,7 @@ interface ClientLayoutProps {
   contactEmail?: string
   contactPhone?: string
   legalLinks?: Record<string, string>
+  locale?: Locale
 }
 
 // extend Window to store a fetch flag without using `any`
@@ -33,7 +35,7 @@ declare global {
   }
 }
 
-export function ClientLayout({ children, session, orgName, orgLogoUrl, contactEmail, contactPhone, legalLinks }: ClientLayoutProps) {
+export function ClientLayout({ children, session, orgName, orgLogoUrl, contactEmail, contactPhone, legalLinks, locale = 'en' }: ClientLayoutProps) {
   const [uiOrgName, setUiOrgName] = React.useState(orgName)
   const [uiOrgLogoUrl, setUiOrgLogoUrl] = React.useState(orgLogoUrl)
   const [uiContactEmail, setUiContactEmail] = React.useState(contactEmail)
@@ -232,6 +234,15 @@ export function ClientLayout({ children, session, orgName, orgLogoUrl, contactEm
   const showPortalChat = pathname?.startsWith('/portal') || false
   const isAdminRoute = pathname?.startsWith('/admin') || false
 
+  // Ensure dark theme is only applied within admin dashboard
+  useEffect(() => {
+    try {
+      if (!isAdminRoute && typeof document !== 'undefined') {
+        document.documentElement.classList.remove('dark')
+      }
+    } catch {}
+  }, [isAdminRoute])
+
   // Global sidebar keyboard shortcuts
   useSidebarKeyboardShortcuts()
 
@@ -286,7 +297,7 @@ export function ClientLayout({ children, session, orgName, orgLogoUrl, contactEm
           Only show main site navigation on NON-admin routes
           Admin routes will have their own dedicated layout with sidebar navigation
         */}
-        {!isAdminRoute && <Navigation />}
+        {!isAdminRoute && <Navigation currentLocale={locale} orgName={uiOrgName} orgLogoUrl={uiOrgLogoUrl} />}
         <main id="site-main-content" tabIndex={-1} role="main" className="flex-1">
           {children}
         </main>
