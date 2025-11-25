@@ -1039,59 +1039,66 @@ Effective cash flow management requires ongoing attention and planning. Regular 
     {
       id: 'notif_1',
       tenantId: defaultTenant.id,
-      recipientId: client1.id,
-      senderId: admin.id,
+      userId: client1.id,
+      relatedUserId: admin.id,
       title: 'Your Quarterly Tax Report is Ready',
-      description: 'Your Q3 tax report has been completed and is available for review in your portal.',
-      type: 'REPORT_READY' as const,
-      status: 'UNREAD' as const,
+      message: 'Your Q3 tax report has been completed and is available for review in your portal.',
+      type: 'REPORT_READY',
+      status: 'sent',
+      channels: ['in_app', 'email'],
     },
     {
       id: 'notif_2',
       tenantId: defaultTenant.id,
-      recipientId: client2.id,
-      senderId: admin.id,
+      userId: client2.id,
+      relatedUserId: admin.id,
       title: 'Invoice Paid Successfully',
-      description: 'Your recent invoice has been marked as paid. Thank you!',
-      type: 'PAYMENT_RECEIVED' as const,
-      status: 'READ' as const,
+      message: 'Your recent invoice has been marked as paid. Thank you!',
+      type: 'PAYMENT_RECEIVED',
+      status: 'sent',
+      channels: ['in_app', 'email'],
+      readAt: new Date(new Date().getTime() - 1000 * 60 * 60),
     },
     {
       id: 'notif_3',
       tenantId: defaultTenant.id,
-      recipientId: staff.id,
-      senderId: admin.id,
+      userId: staff.id,
+      relatedUserId: admin.id,
       title: 'New Service Request Assigned',
-      description: 'A new bookkeeping service request has been assigned to you.',
-      type: 'ASSIGNMENT' as const,
-      status: 'UNREAD' as const,
+      message: 'A new bookkeeping service request has been assigned to you.',
+      type: 'ASSIGNMENT',
+      status: 'sent',
+      channels: ['in_app', 'email'],
     },
     {
       id: 'notif_4',
       tenantId: defaultTenant.id,
-      recipientId: lead.id,
-      senderId: admin.id,
+      userId: lead.id,
+      relatedUserId: admin.id,
       title: 'Team Performance Report',
-      description: 'Your weekly team performance report is ready.',
-      type: 'REPORT_READY' as const,
-      status: 'UNREAD' as const,
+      message: 'Your weekly team performance report is ready.',
+      type: 'REPORT_READY',
+      status: 'sent',
+      channels: ['in_app', 'email'],
     },
     {
       id: 'notif_5',
       tenantId: defaultTenant.id,
-      recipientId: admin.id,
-      senderId: staff.id,
+      userId: admin.id,
+      relatedUserId: staff.id,
       title: 'Task Completed',
-      description: 'The quarterly compliance review has been completed.',
-      type: 'TASK_COMPLETED' as const,
-      status: 'READ' as const,
+      message: 'The quarterly compliance review has been completed.',
+      type: 'TASK_COMPLETED',
+      status: 'sent',
+      channels: ['in_app', 'email'],
+      readAt: new Date(new Date().getTime() - 1000 * 60 * 60 * 2),
     },
   ]
 
   for (const notif of notifications) {
     await prisma.notification.upsert({
       where: { id: notif.id },
-      update: { ...notif, id: undefined },
+      update: { title: notif.title, message: notif.message, type: notif.type, status: notif.status, channels: notif.channels, readAt: notif.readAt },
       create: notif,
     })
   }
@@ -2191,7 +2198,7 @@ Effective cash flow management requires ongoing attention and planning. Regular 
     })
   }
 
-  console.log('✅ Sample invoices created')
+  console.log('�� Sample invoices created')
 
   // Seed sample expenses (new feature)
   const expenseCategories = ['Office Supplies', 'Travel', 'Software', 'Training', 'Equipment']
