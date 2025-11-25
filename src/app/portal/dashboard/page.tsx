@@ -16,6 +16,7 @@ import {
   Plus,
   ChevronRight,
   Zap,
+  AlertCircle,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useSession } from "next-auth/react";
