@@ -1001,29 +1001,25 @@ Effective cash flow management requires ongoing attention and planning. Regular 
     {
       id: 'comment_1',
       ticketId: 'ticket_1',
-      tenantId: defaultTenant.id,
-      createdById: staff.id,
+      authorId: staff.id,
       content: 'I\'ve reviewed your account. It looks like the file size exceeded our limit. Try uploading files under 10MB.',
     },
     {
       id: 'comment_2',
       ticketId: 'ticket_1',
-      tenantId: defaultTenant.id,
-      createdById: client1.id,
+      authorId: client1.id,
       content: 'Thank you! I\'ll try splitting the documents and upload them separately.',
     },
     {
       id: 'comment_3',
       ticketId: 'ticket_2',
-      tenantId: defaultTenant.id,
-      createdById: staff.id,
+      authorId: staff.id,
       content: 'Generally, ordinary and necessary business expenses are deductible. This includes office supplies, equipment, professional fees, etc. Let me schedule a detailed consultation to review your specific situation.',
     },
     {
       id: 'comment_4',
       ticketId: 'ticket_3',
-      tenantId: defaultTenant.id,
-      createdById: staff.id,
+      authorId: staff.id,
       content: 'We\'ve corrected the billing issue. The invoice should now appear in your portal. Please refresh your browser.',
     },
   ]
@@ -1031,7 +1027,7 @@ Effective cash flow management requires ongoing attention and planning. Regular 
   for (const comment of ticketComments) {
     await prisma.supportTicketComment.upsert({
       where: { id: comment.id },
-      update: { ...comment, id: undefined },
+      update: { content: comment.content },
       create: comment,
     })
   }
