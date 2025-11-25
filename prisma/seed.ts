@@ -426,18 +426,18 @@ async function main() {
 
   // SidebarPreferences for users
   const sidebarPrefs = [
-    { userId: admin.id, collapsed: false, theme: 'light', sidebarWidth: 280, showLabels: true, favoriteItems: ['dashboard', 'clients', 'services', 'invoices'] },
-    { userId: staff.id, collapsed: false, theme: 'light', sidebarWidth: 280, showLabels: true, favoriteItems: ['dashboard', 'bookings', 'tasks'] },
-    { userId: client1.id, collapsed: false, theme: 'light', sidebarWidth: 280, showLabels: true, favoriteItems: ['dashboard', 'services', 'invoices'] },
-    { userId: client2.id, collapsed: false, theme: 'light', sidebarWidth: 280, showLabels: true, favoriteItems: ['dashboard', 'bookings'] },
-    { userId: lead.id, collapsed: false, theme: 'light', sidebarWidth: 280, showLabels: true, favoriteItems: ['dashboard', 'team', 'reports', 'clients'] },
-    { userId: superadmin.id, collapsed: false, theme: 'light', sidebarWidth: 280, showLabels: true, favoriteItems: ['dashboard', 'users', 'settings', 'audit-logs'] },
+    { userId: admin.id, collapsed: false, width: 280, mobileOpen: false, expandedGroups: ['dashboard', 'business', 'clients', 'services'] },
+    { userId: staff.id, collapsed: false, width: 280, mobileOpen: false, expandedGroups: ['dashboard', 'business', 'bookings', 'tasks'] },
+    { userId: client1.id, collapsed: false, width: 280, mobileOpen: false, expandedGroups: ['dashboard', 'business', 'services'] },
+    { userId: client2.id, collapsed: false, width: 280, mobileOpen: false, expandedGroups: ['dashboard', 'business', 'bookings'] },
+    { userId: lead.id, collapsed: false, width: 280, mobileOpen: false, expandedGroups: ['dashboard', 'business', 'team', 'reports'] },
+    { userId: superadmin.id, collapsed: false, width: 280, mobileOpen: false, expandedGroups: ['dashboard', 'business', 'users', 'settings'] },
   ]
 
   for (const prefs of sidebarPrefs) {
     await prisma.sidebarPreferences.upsert({
       where: { userId: prefs.userId },
-      update: { ...prefs, userId: undefined },
+      update: { collapsed: prefs.collapsed, width: prefs.width, mobileOpen: prefs.mobileOpen, expandedGroups: prefs.expandedGroups },
       create: prefs,
     })
   }
@@ -2129,7 +2129,7 @@ Effective cash flow management requires ongoing attention and planning. Regular 
     })
   }
 
-  console.log('�� Audit logs created')
+  console.log('✅ Audit logs created')
 
   // Seed sample invoices (new feature)
   const invoiceStatuses = ['DRAFT', 'SENT', 'UNPAID', 'PAID']
