@@ -111,19 +111,6 @@ export function NotificationBell() {
                         <Badge
                             variant="destructive"
                             className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-[10px]"
-                        >
-                            {unreadCount > 99 ? '99+' : unreadCount}
-                        </Badge>
-                    )}
-                </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-80 p-0" align="end">
-                {/* Header */}
-                <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
-                    <h3 className="font-semibold text-sm text-gray-900 dark:text-gray-100">
-                        Notifications
-                    </h3>
-                    {unreadCount > 0 && (
                         <Button
                             variant="ghost"
                             size="sm"
@@ -250,3 +237,4 @@ export function NotificationBell() {
         </Popover>
     )
 }
+

@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from 'react'
-import { Send, Paperclip, X } from 'lucide-react'
+import { Send } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
@@ -112,21 +112,43 @@ export function MessageComposeModal({
                             <SelectContent>
                                 <SelectItem value="support">Support Team</SelectItem>
                                 <SelectItem value="accounting">Accounting</SelectItem>
-                            </Label>
-                            <Textarea
-                                id="body"
-                                placeholder="Type your message here... (minimum 10 characters)"
-                                value={body}
-                                onChange={(e) => setBody(e.target.value)}
-                                rows={8}
-                                className="resize-none"
-                                maxLength={5000}
-                                disabled={loading}
-                                required
-                            />
-                            <p className="text-xs text-gray-500">
-                                {body.length}/5000 characters
-                            </p>
+                                <SelectItem value="admin">Administrator</SelectItem>
+                            </SelectContent>
+                        </Select>
+                    </div>
+
+                    {/* Subject */}
+                    <div className="space-y-2">
+                        <Label htmlFor="subject">Subject</Label>
+                        <Input
+                            id="subject"
+                            placeholder="Enter message subject (optional)"
+                            value={subject}
+                            onChange={(e) => setSubject(e.target.value)}
+                            maxLength={255}
+                            disabled={loading}
+                        />
+                    </div>
+
+                    {/* Message Body */}
+                    <div className="space-y-2">
+                        <Label htmlFor="body">
+                            Message <span className="text-red-500">*</span>
+                        </Label>
+                        <Textarea
+                            id="body"
+                            placeholder="Type your message here... (minimum 10 characters)"
+                            value={body}
+                            onChange={(e) => setBody(e.target.value)}
+                            rows={8}
+                            className="resize-none"
+                            maxLength={5000}
+                            disabled={loading}
+                            required
+                        />
+                        <p className="text-xs text-gray-500">
+                            {body.length}/5000 characters
+                        </p>
                     </div>
                 </form>
 
