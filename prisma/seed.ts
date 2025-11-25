@@ -404,25 +404,25 @@ async function main() {
 
   console.log('✅ User profiles created')
 
-  // NotificationSettings for users
-  const notificationSettings = [
-    { userId: admin.id, emailOnBookingConfirmed: true, emailOnBookingRescheduled: true, emailOnBookingCancelled: true, smsNotifications: false },
-    { userId: staff.id, emailOnBookingConfirmed: true, emailOnBookingRescheduled: true, emailOnBookingCancelled: true, smsNotifications: false },
-    { userId: client1.id, emailOnBookingConfirmed: true, emailOnBookingRescheduled: true, emailOnBookingCancelled: true, smsNotifications: true },
-    { userId: client2.id, emailOnBookingConfirmed: true, emailOnBookingRescheduled: true, emailOnBookingCancelled: true, smsNotifications: false },
-    { userId: lead.id, emailOnBookingConfirmed: true, emailOnBookingRescheduled: true, emailOnBookingCancelled: true, smsNotifications: true },
-    { userId: superadmin.id, emailOnBookingConfirmed: true, emailOnBookingRescheduled: true, emailOnBookingCancelled: true, smsNotifications: true },
+  // NotificationPreferences for users
+  const notificationPreferences = [
+    { userId: admin.id, tenantId: defaultTenant.id, inAppEnabled: true, emailEnabled: true, smsEnabled: false },
+    { userId: staff.id, tenantId: defaultTenant.id, inAppEnabled: true, emailEnabled: true, smsEnabled: false },
+    { userId: client1.id, tenantId: defaultTenant.id, inAppEnabled: true, emailEnabled: true, smsEnabled: true },
+    { userId: client2.id, tenantId: defaultTenant.id, inAppEnabled: true, emailEnabled: true, smsEnabled: false },
+    { userId: lead.id, tenantId: defaultTenant.id, inAppEnabled: true, emailEnabled: true, smsEnabled: true },
+    { userId: superadmin.id, tenantId: defaultTenant.id, inAppEnabled: true, emailEnabled: true, smsEnabled: true },
   ]
 
-  for (const settings of notificationSettings) {
-    await prisma.notificationSettings.upsert({
-      where: { userId: settings.userId },
-      update: settings,
-      create: settings,
+  for (const prefs of notificationPreferences) {
+    await prisma.notificationPreference.upsert({
+      where: { userId: prefs.userId },
+      update: { inAppEnabled: prefs.inAppEnabled, emailEnabled: prefs.emailEnabled, smsEnabled: prefs.smsEnabled },
+      create: prefs,
     })
   }
 
-  console.log('✅ Notification settings created')
+  console.log('✅ Notification preferences created')
 
   // SidebarPreferences for users
   const sidebarPrefs = [
@@ -2129,7 +2129,7 @@ Effective cash flow management requires ongoing attention and planning. Regular 
     })
   }
 
-  console.log('✅ Audit logs created')
+  console.log('�� Audit logs created')
 
   // Seed sample invoices (new feature)
   const invoiceStatuses = ['DRAFT', 'SENT', 'UNPAID', 'PAID']
