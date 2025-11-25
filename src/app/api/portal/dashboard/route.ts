@@ -14,6 +14,8 @@ export const GET = withTenantContext(async (req: NextRequest) => {
     const userId = ctx?.userId;
 
     try {
+        // Fetch all data in parallel with error handling
+        // Each query is wrapped to provide empty results on failure
         const [
             tasks,
             bookings,
