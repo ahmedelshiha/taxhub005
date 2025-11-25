@@ -41,7 +41,17 @@ interface Entity {
   status: string;
 }
 
-const fetcher = (url: string) => fetch(url).then((res) => res.json());
+const fetcher = async (url: string) => {
+  const res = await fetch(url);
+  const data = await res.json();
+
+  // Handle error responses gracefully
+  if (!res.ok || data.error) {
+    throw new Error(data.error || `Failed to fetch ${url}`);
+  }
+
+  return data;
+};
 
 export default function DashboardPage() {
   const router = useRouter();
