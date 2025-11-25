@@ -1246,6 +1246,162 @@ Effective cash flow management requires ongoing attention and planning. Regular 
 
   console.log('✅ Default task templates created')
 
+  // Documents & Approvals
+  const documentVersions = [
+    {
+      id: 'doc_v_1',
+      tenantId: defaultTenant.id,
+      uploaderId: admin.id,
+      fileName: 'Client_Onboarding_Agreement.pdf',
+      fileType: 'application/pdf',
+      fileSize: 245680,
+      uploadedAt: new Date(new Date().getTime() - 1000 * 60 * 60 * 24 * 7),
+      version: 1,
+      documentType: 'AGREEMENT' as const,
+      status: 'PUBLISHED' as const,
+    },
+    {
+      id: 'doc_v_2',
+      tenantId: defaultTenant.id,
+      uploaderId: staff.id,
+      fileName: 'Tax_Return_2024.pdf',
+      fileType: 'application/pdf',
+      fileSize: 892310,
+      uploadedAt: new Date(new Date().getTime() - 1000 * 60 * 60 * 24 * 3),
+      version: 1,
+      documentType: 'TAX_RETURN' as const,
+      status: 'DRAFT' as const,
+    },
+    {
+      id: 'doc_v_3',
+      tenantId: defaultTenant.id,
+      uploaderId: admin.id,
+      fileName: 'Tax_Return_2024.pdf',
+      fileType: 'application/pdf',
+      fileSize: 892310,
+      uploadedAt: new Date(new Date().getTime() - 1000 * 60 * 60 * 24 * 1),
+      version: 2,
+      documentType: 'TAX_RETURN' as const,
+      status: 'PUBLISHED' as const,
+    },
+    {
+      id: 'doc_v_4',
+      tenantId: defaultTenant.id,
+      uploaderId: lead.id,
+      fileName: 'Financial_Statement_Q3_2024.xlsx',
+      fileType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      fileSize: 567890,
+      uploadedAt: new Date(new Date().getTime() - 1000 * 60 * 60 * 24 * 5),
+      version: 1,
+      documentType: 'FINANCIAL_STATEMENT' as const,
+      status: 'PUBLISHED' as const,
+    },
+  ]
+
+  for (const doc of documentVersions) {
+    await prisma.documentVersion.upsert({
+      where: { id: doc.id },
+      update: { ...doc, id: undefined },
+      create: doc,
+    })
+  }
+
+  console.log('✅ Document versions created')
+
+  // Approvals
+  const approvals = [
+    {
+      id: 'appr_1',
+      tenantId: defaultTenant.id,
+      requesterId: client1.id,
+      approverId: admin.id,
+      documentVersionId: 'doc_v_1',
+      type: 'DOCUMENT_REVIEW' as const,
+      status: 'APPROVED' as const,
+      reason: 'Verified and approved for use',
+      decidedAt: new Date(new Date().getTime() - 1000 * 60 * 60 * 24 * 2),
+    },
+    {
+      id: 'appr_2',
+      tenantId: defaultTenant.id,
+      requesterId: staff.id,
+      approverId: lead.id,
+      documentVersionId: 'doc_v_2',
+      type: 'DOCUMENT_REVIEW' as const,
+      status: 'PENDING' as const,
+      reason: 'Awaiting manager approval for final tax return',
+    },
+    {
+      id: 'appr_3',
+      tenantId: defaultTenant.id,
+      requesterId: client2.id,
+      approverId: admin.id,
+      type: 'EXPENSE_REPORT' as const,
+      status: 'APPROVED' as const,
+      reason: 'All expenses verified',
+      decidedAt: new Date(new Date().getTime() - 1000 * 60 * 60 * 24 * 1),
+    },
+    {
+      id: 'appr_4',
+      tenantId: defaultTenant.id,
+      requesterId: staff.id,
+      approverId: lead.id,
+      type: 'TIME_OFF' as const,
+      status: 'PENDING' as const,
+      reason: 'Vacation request for next month',
+    },
+  ]
+
+  for (const appr of approvals) {
+    await prisma.approval.upsert({
+      where: { id: appr.id },
+      update: { ...appr, id: undefined },
+      create: appr,
+    })
+  }
+
+  console.log('✅ Approvals created')
+
+  // Approval History
+  const approvalHistories = [
+    {
+      id: 'appr_hist_1',
+      tenantId: defaultTenant.id,
+      approvalId: 'appr_1',
+      performedBy: admin.id,
+      action: 'APPROVED' as const,
+      comment: 'Document looks good and complies with all standards',
+      metadata: { reviewTime: 45, pages: 15 },
+    },
+    {
+      id: 'appr_hist_2',
+      tenantId: defaultTenant.id,
+      approvalId: 'appr_3',
+      performedBy: admin.id,
+      action: 'APPROVED' as const,
+      comment: 'All receipts verified and amounts match supporting documentation',
+      metadata: { expenseCount: 12, totalAmount: 2450 },
+    },
+    {
+      id: 'appr_hist_3',
+      tenantId: defaultTenant.id,
+      approvalId: 'appr_1',
+      performedBy: client1.id,
+      action: 'SUBMITTED' as const,
+      comment: 'Initial submission for review',
+    },
+  ]
+
+  for (const hist of approvalHistories) {
+    await prisma.approvalHistory.upsert({
+      where: { id: hist.id },
+      update: { ...hist, id: undefined },
+      create: hist,
+    })
+  }
+
+  console.log('✅ Approval history created')
+
   // Create contact submissions
   const contactSubmissions = [
     {
