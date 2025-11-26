@@ -12,7 +12,8 @@ import { useSession } from 'next-auth/react'
 import { Search, Bell, Menu, Plus, Calendar, Upload } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import { NotificationBell } from '@/components/portal/NotificationBell'
+import NotificationBell from '@/components/portal/layout/NotificationBell'
+import NotificationCenterModal from '@/components/portal/modals/NotificationCenterModal'
 import GlobalSearchModal from '@/components/portal/search/GlobalSearchModal'
 import EntitySwitcher from '@/components/portal/layout/EntitySwitcher'
 
@@ -26,6 +27,7 @@ export default function PortalHeader({ onMenuToggle, isMobile = false }: PortalH
   const { data: session } = useSession()
   const [searchQuery, setSearchQuery] = useState('')
   const [globalSearchOpen, setGlobalSearchOpen] = useState(false)
+  const [notificationCenterOpen, setNotificationCenterOpen] = useState(false)
 
   const userName = session?.user?.name?.split(' ')[0] || 'User'
 
@@ -46,6 +48,11 @@ export default function PortalHeader({ onMenuToggle, isMobile = false }: PortalH
       <GlobalSearchModal
         open={globalSearchOpen}
         onOpenChange={setGlobalSearchOpen}
+      />
+
+      <NotificationCenterModal ref={null}
+        open={notificationCenterOpen}
+        onOpenChange={setNotificationCenterOpen}
       />
 
       <header className="sticky top-0 z-40 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
@@ -109,7 +116,7 @@ export default function PortalHeader({ onMenuToggle, isMobile = false }: PortalH
             <div className="h-6 w-px bg-gray-200 dark:bg-gray-700 mx-2 hidden sm:block" />
 
             {/* Notifications */}
-            <NotificationBell />
+            <NotificationBell onOpenCenter={() => setNotificationCenterOpen(true)} />
 
             {/* Mobile search button */}
             <Button
