@@ -13,13 +13,7 @@ export async function POST(request: NextRequest) {
         // Store performance metrics in database (optional)
         // For now, just log to console in development
         if (process.env.NODE_ENV === 'development') {
-            console.log('[Performance Metrics]', {
-                url: data.url,
-                LCP: data.metrics?.LCP,
-                FID: data.metrics?.FID,
-                CLS: data.metrics?.CLS,
-                pageLoadTime: data.metrics?.pageLoadTime,
-            });
+            // Log metrics in development if needed
         }
 
         // In production, you might want to:
