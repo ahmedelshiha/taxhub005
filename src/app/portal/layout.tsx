@@ -20,8 +20,17 @@ export default async function PortalAppLayout({
 }: {
     children: React.ReactNode
 }) {
-    // Get session server-side for initial state
-    const session = await getServerSession(authOptions)
+    // Get session server-side for initial state with error handling and timeout
+    let session = null
+    try {
+        session = await Promise.race([
+            getServerSession(authOptions),
+            new Promise((resolve) => setTimeout(() => resolve(null), 1000)),
+        ])
+    } catch (error) {
+        console.error('Failed to get session in portal layout:', error)
+        session = null
+    }
 
     return (
         <SessionProvider session={session}>
