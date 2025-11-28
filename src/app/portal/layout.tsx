@@ -1,4 +1,5 @@
-import { getServerSession } from 'next-auth'
+
+import { getServerSession } from 'next-auth/next'
 import { authOptions } from '@/lib/auth'
 import { SessionProvider } from 'next-auth/react'
 import { ThemeProvider } from '@/components/providers/ThemeProvider'
