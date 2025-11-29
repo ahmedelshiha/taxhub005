@@ -27,8 +27,8 @@ export default function WelcomeModal({ open, onOpenChange, onStartTour }: Welcom
     const [dontShowAgain, setDontShowAgain] = useState(false)
 
     const handleClose = () => {
-        if (dontShowAgain) {
-            // Store preference in localStorage
+        if (dontShowAgain && typeof window !== 'undefined') {
+            // Store preference in localStorage (SSR-safe)
             localStorage.setItem('portal-tour-dismissed', 'true')
         }
         onOpenChange(false)
