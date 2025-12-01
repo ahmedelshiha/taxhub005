@@ -1,6 +1,6 @@
 "use client"
 
-import { createContext, useContext, useEffect, useCallback, useState } from "react"
+import { createContext, useContext, useEffect, useCallback, useState, useRef } from "react"
 
 type KeyCombo = string // e.g., "Meta+k", "Shift+?", "Escape"
 
