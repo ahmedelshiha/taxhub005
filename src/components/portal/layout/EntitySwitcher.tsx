@@ -78,15 +78,8 @@ export default function EntitySwitcher() {
             localStorage.setItem(RECENT_ENTITIES_KEY, JSON.stringify(newRecents))
         }
 
-        // Refresh all portal data for new entity
-        await Promise.all([
-            mutate('/api/portal/overview'),
-            mutate('/api/portal/tasks'),
-            mutate('/api/portal/compliance'),
-            mutate('/api/portal/financial'),
-            mutate('/api/portal/activity'),
-            mutate('/api/portal/counts'),
-        ])
+        // Invalidate all portal data to refetch for new entity
+        queryClient.invalidateQueries({ queryKey: ['/api/portal'] }, { cancelRefetch: false })
     }
 
     const filteredEntities = useMemo(() => {
