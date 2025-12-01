@@ -6,7 +6,7 @@
 
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { usePathname } from 'next/navigation'
 import PortalSidebar from './PortalSidebar'
 import PortalHeader from './PortalHeader'
@@ -47,12 +47,17 @@ export default function PortalDashboardLayout({
         setIsClient(true)
     }, [])
 
-    // Auto-collapse sidebar on mobile
+    // Auto-collapse sidebar on mobile/tablet with guard to avoid infinite loops
+    const prevResponsiveRef = useRef({ isMobile: responsive.isMobile, isTablet: responsive.isTablet })
     useEffect(() => {
-        if (responsive.isMobile || responsive.isTablet) {
+        const prev = prevResponsiveRef.current
+        const shouldCollapse = (responsive.isMobile || responsive.isTablet) && !prev.isMobile && !prev.isTablet
+        if (shouldCollapse && !collapsed) {
             setSidebarCollapsed(true)
         }
-    }, [responsive.isMobile, responsive.isTablet, setSidebarCollapsed])
+        // Update ref for next render
+        prevResponsiveRef.current = { isMobile: responsive.isMobile, isTablet: responsive.isTablet }
+    }, [responsive.isMobile, responsive.isTablet, setSidebarCollapsed, collapsed])
 
     // Close mobile menu on route change
     useEffect(() => {
