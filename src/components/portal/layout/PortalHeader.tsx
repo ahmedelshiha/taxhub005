@@ -13,8 +13,7 @@ import { Search, Bell, Menu, Plus, Calendar, Upload } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import NotificationBell from '@/components/portal/layout/NotificationBell'
-// TEMPORARILY DISABLED - EntitySwitcher causing infinite loop via Zustand subscriptions
-// import EntitySwitcher from '@/components/portal/layout/EntitySwitcher'
+import EntitySwitcher from '@/components/portal/layout/EntitySwitcher'
 import { useModal } from '@/components/providers/ModalProvider'
 import { useKeyboardShortcut } from '@/hooks/useKeyboardShortcut'
 
@@ -71,11 +70,10 @@ export default function PortalHeader({ onMenuToggle }: PortalHeaderProps) {
           </div>
 
 
-          {/* Right: Actions + Notifications (EntitySwitcher removed temporarily) */}
+          {/* Right: Actions + Notifications */}
           <div className="flex items-center gap-2">
-            {/* TEMPORARILY DISABLED - Causing infinite loop
+            {/* Entity Switcher */}
             <EntitySwitcher />
-            */}
 
             <div className="h-6 w-px bg-gray-200 dark:bg-gray-700 mx-2 hidden sm:block" />
 
