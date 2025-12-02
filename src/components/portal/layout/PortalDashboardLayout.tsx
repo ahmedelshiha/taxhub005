@@ -1,24 +1,17 @@
 /**
  * Portal Dashboard Layout
- * Main layout wrapper for portal pages with sidebar navigation
- * Adapts AdminDashboardLayout pattern for client portal
+ * Simplified, zero-loop architecture
+ * CSS-first responsive design with minimal state
  */
 
 'use client'
 
-import { useState, useEffect, useCallback, useRef } from 'react'
-import { usePathname } from 'next/navigation'
+import { useState } from 'react'
 import PortalSidebar from './PortalSidebar'
 import PortalHeader from './PortalHeader'
 import PortalFooter from './PortalFooter'
 import { Breadcrumbs } from '../Breadcrumbs'
-import { useResponsive } from '@/hooks/admin/useResponsive'
-import {
-    usePortalSidebarCollapsed,
-    usePortalLayoutStore
-} from '@/stores/portal/layout.store'
 import { cn } from '@/lib/utils'
-import { PortalLayoutSkeleton } from './PortalLayoutSkeleton'
 import { OfflineIndicator } from '../OfflineIndicator'
 
 interface PortalDashboardLayoutProps {
@@ -30,76 +23,8 @@ export default function PortalDashboardLayout({
     children,
     className
 }: PortalDashboardLayoutProps) {
-    const pathname = usePathname()
-    const responsive = useResponsive()
-
-    // State from Zustand store
-    const collapsed = usePortalSidebarCollapsed()
-    // Use stable selector to prevent unnecessary re-renders
-    const setSidebarCollapsed = usePortalLayoutStore((state) => state.setSidebarCollapsed)
-
-    // Mobile menu state
+    // Simple mobile menu state - no complex effects or subscriptions
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
-
-    // Client-side hydration flag
-    const [isClient, setIsClient] = useState(false)
-
-    useEffect(() => {
-        setIsClient(true)
-    }, [])
-
-    // Track previous breakpoint to only trigger collapse when entering mobile/tablet
-    const prevIsSmallScreenRef = useRef<boolean | null>(null);
-
-    // Auto-collapse sidebar on mobile/tablet
-    useEffect(() => {
-        // Wait for client-side hydration and responsive data
-        if (!isClient) return;
-
-        const isSmallScreen = responsive.isMobile || responsive.isTablet;
-        const wasSmallScreen = prevIsSmallScreenRef.current;
-
-        // Only act when transitioning to small screen for the first time
-        if (wasSmallScreen === null || (!wasSmallScreen && isSmallScreen)) {
-            // Guard: only set if not already collapsed (prevents unnecessary updates)
-            if (!collapsed) {
-                setSidebarCollapsed(true);
-            }
-        }
-
-        prevIsSmallScreenRef.current = isSmallScreen;
-    }, [responsive.isMobile, responsive.isTablet, setSidebarCollapsed, isClient])
-    // NOTE: Intentionally removed 'collapsed' from dependencies to prevent infinite loop
-    // The effect should only respond to screen size changes, not the state it's setting
-
-    // Close mobile menu on route change
-    useEffect(() => {
-        setMobileMenuOpen(false)
-    }, [pathname])
-
-    const handleMenuToggle = useCallback(() => {
-        if (responsive.isMobile) {
-            setMobileMenuOpen(prev => !prev)
-        } else {
-            usePortalLayoutStore.getState().toggleSidebar()
-        }
-    }, [responsive.isMobile])
-
-    const handleMobileMenuClose = useCallback(() => {
-        setMobileMenuOpen(false)
-    }, [])
-
-    // Calculate content margin based on sidebar state
-    const contentMargin = responsive.isMobile
-        ? 'ml-0'
-        : collapsed
-            ? 'ml-16'
-            : 'ml-64'
-
-    // Loading skeleton during SSR
-    if (!isClient) {
-        return <PortalLayoutSkeleton />
-    }
 
     return (
         <div className={cn('min-h-screen bg-gray-50 dark:bg-gray-900', className)}>
@@ -115,25 +40,16 @@ export default function PortalDashboardLayout({
                 Skip to main content
             </a>
 
-            {/* Sidebar */}
+            {/* Sidebar - CSS handles responsive behavior */}
             <PortalSidebar
-                isMobile={responsive.isMobile}
                 isOpen={mobileMenuOpen}
-                onClose={handleMobileMenuClose}
+                onClose={() => setMobileMenuOpen(false)}
             />
 
-            {/* Main content area */}
-            <div
-                className={cn(
-                    'min-h-screen flex flex-col transition-all duration-300',
-                    contentMargin
-                )}
-            >
+            {/* Main content area - CSS handles margin on desktop */}
+            <div className="md:ml-64 min-h-screen flex flex-col">
                 {/* Header */}
-                <PortalHeader
-                    onMenuToggle={handleMenuToggle}
-                    isMobile={responsive.isMobile}
-                />
+                <PortalHeader onMenuToggle={() => setMobileMenuOpen(!mobileMenuOpen)} />
 
                 {/* Breadcrumbs */}
                 <div className="border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">

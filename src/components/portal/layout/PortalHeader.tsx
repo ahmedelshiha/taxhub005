@@ -19,10 +19,9 @@ import { useKeyboardShortcut } from '@/hooks/useKeyboardShortcut'
 
 interface PortalHeaderProps {
   onMenuToggle?: () => void
-  isMobile?: boolean
 }
 
-export default function PortalHeader({ onMenuToggle, isMobile = false }: PortalHeaderProps) {
+export default function PortalHeader({ onMenuToggle }: PortalHeaderProps) {
   const router = useRouter()
   const { data: session } = useSession()
   const { openModal } = useModal()
@@ -44,16 +43,16 @@ export default function PortalHeader({ onMenuToggle, isMobile = false }: PortalH
         <div className="flex items-center justify-between h-16 px-4 sm:px-6 lg:px-8">
           {/* Left: Mobile menu + Search */}
           <div className="flex items-center gap-3 flex-1">
-            {isMobile && (
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={onMenuToggle}
-                aria-label="Toggle menu"
-              >
-                <Menu className="h-5 w-5" />
-              </Button>
-            )}
+            {/* Mobile menu button - hidden on desktop via CSS */}
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={onMenuToggle}
+              aria-label="Toggle menu"
+              className="md:hidden"
+            >
+              <Menu className="h-5 w-5" />
+            </Button>
 
             <div className="relative hidden md:block flex-1 max-w-md">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />

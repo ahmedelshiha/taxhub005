@@ -33,11 +33,6 @@ import {
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
-import {
-    usePortalSidebarCollapsed,
-    usePortalExpandedGroups,
-    usePortalLayoutStore
-} from '@/stores/portal/layout.store'
 import { useQuery } from '@tanstack/react-query'
 
 interface NavigationItem {
@@ -54,25 +49,28 @@ interface NavigationSection {
 }
 
 interface PortalSidebarProps {
-    isMobile?: boolean
-    isOpen?: boolean
-    onClose?: () => void
+    isOpen: boolean
+    onClose: () => void
 }
 
 export default function PortalSidebar({
-    isMobile = false,
-    isOpen = false,
+    isOpen,
     onClose
 }: PortalSidebarProps) {
     const pathname = usePathname()
     const router = useRouter()
     const { data: session } = useSession()
 
-    // State from Zustand store
-    const collapsed = usePortalSidebarCollapsed()
-    const expandedGroups = usePortalExpandedGroups()
-    // Use stable selector to prevent unnecessary re-renders
-    const toggleGroup = usePortalLayoutStore((state) => state.toggleGroup)
+    // Local state for expanded navigation groups (no Zustand to prevent loops)
+    const [expandedGroups, setExpandedGroups] = useState<string[]>([])
+
+    const toggleGroup = (groupName: string) => {
+        setExpandedGroups(prev =>
+            prev.includes(groupName)
+                ? prev.filter(g => g !== groupName)
+                : [...prev, groupName]
+        )
+    }
 
     // Fetch notification counts for badges using React Query
     const { data: countsResponse } = useQuery({
@@ -185,18 +183,11 @@ export default function PortalSidebar({
             'group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500'
         )
 
-        const expandedClasses = cn(
+        const itemClasses = cn(
             'w-full px-3 py-2 text-sm',
             isActive
                 ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 border-l-2 border-blue-600'
                 : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
-        )
-
-        const collapsedClasses = cn(
-            'w-12 h-12 flex items-center justify-center',
-            isActive
-                ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600'
-                : 'text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800'
         )
 
         return (
@@ -205,44 +196,38 @@ export default function PortalSidebar({
                     <button
                         onClick={() => toggleGroup(item.href)}
                         aria-expanded={isExpanded}
-                        className={cn(baseClasses, collapsed ? collapsedClasses : expandedClasses)}
-                        title={collapsed ? item.name : undefined}
+                        className={cn(baseClasses, itemClasses)}
                     >
-                        <item.icon className={cn('flex-shrink-0 h-5 w-5', !collapsed && 'mr-3')} />
-                        {!collapsed && (
-                            <>
-                                <span className="flex-1 text-left">{item.name}</span>
-                                {item.badge && (
-                                    <Badge variant="secondary" className="ml-2">{item.badge}</Badge>
-                                )}
-                                {isExpanded ? (
-                                    <ChevronDown className="h-4 w-4 ml-2" />
-                                ) : (
-                                    <ChevronRight className="h-4 w-4 ml-2" />
-                                )}
-                            </>
-                        )}
+                        <item.icon className="flex-shrink-0 h-5 w-5 mr-3" />
+                        <>
+                            <span className="flex-1 text-left">{item.name}</span>
+                            {item.badge && (
+                                <Badge variant="secondary" className="ml-2">{item.badge}</Badge>
+                            )}
+                            {isExpanded ? (
+                                <ChevronDown className="h-4 w-4 ml-2" />
+                            ) : (
+                                <ChevronRight className="h-4 w-4 ml-2" />
+                            )}
+                        </>
                     </button>
                 ) : (
                     <Link
                         href={item.href}
-                        onClick={isMobile ? onClose : undefined}
-                        className={cn(baseClasses, collapsed ? collapsedClasses : expandedClasses)}
-                        title={collapsed ? item.name : undefined}
+                        onClick={onClose}
+                        className={cn(baseClasses, itemClasses)}
                     >
-                        <item.icon className={cn('flex-shrink-0 h-5 w-5', !collapsed && 'mr-3')} />
-                        {!collapsed && (
-                            <>
-                                <span className="flex-1">{item.name}</span>
-                                {item.badge && (
-                                    <Badge variant="secondary" className="ml-2">{item.badge}</Badge>
-                                )}
-                            </>
-                        )}
+                        <item.icon className="flex-shrink-0 h-5 w-5 mr-3" />
+                        <>
+                            <span className="flex-1">{item.name}</span>
+                            {item.badge && (
+                                <Badge variant="secondary" className="ml-2">{item.badge}</Badge>
+                            )}
+                        </>
                     </Link>
                 )}
 
-                {hasChildren && isExpanded && !collapsed && (
+                {hasChildren && isExpanded && (
                     <ul className="mt-1 ml-4 space-y-1">
                         {item.children!.map(child => renderNavigationItem(child, depth + 1))}
                     </ul>
@@ -251,14 +236,15 @@ export default function PortalSidebar({
         )
     }
 
-    const effectiveWidth = collapsed ? 64 : 256
+    // Always use full width (256px) - no collapse functionality to keep simple
+    const effectiveWidth = 256
 
     return (
         <>
-            {/* Mobile overlay */}
-            {isMobile && isOpen && (
+            {/* Mobile overlay - hide on desktop */}
+            {isOpen && (
                 <div
-                    className="fixed inset-0 bg-gray-600 bg-opacity-75 z-40"
+                    className="fixed inset-0 bg-gray-600 bg-opacity-75 z-40 md:hidden"
                     onClick={onClose}
                     aria-hidden="true"
                 />
@@ -269,7 +255,9 @@ export default function PortalSidebar({
                 className={cn(
                     'fixed inset-y-0 left-0 z-50 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700',
                     'flex flex-col transition-all duration-300',
-                    isMobile && !isOpen && '-translate-x-full'
+                    // Mobile: hidden by default, shown when open
+                    // Desktop: always visible
+                    isOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
                 )}
                 style={{ width: `${effectiveWidth}px` }}
                 role="navigation"
@@ -277,27 +265,21 @@ export default function PortalSidebar({
             >
                 {/* Logo/Header */}
                 <div className="h-16 flex items-center justify-center border-b border-gray-200 dark:border-gray-700 px-4">
-                    {collapsed ? (
+                    <div className="flex items-center gap-2">
                         <Building2 className="h-8 w-8 text-blue-600" />
-                    ) : (
-                        <div className="flex items-center gap-2">
-                            <Building2 className="h-8 w-8 text-blue-600" />
-                            <span className="text-lg font-bold text-gray-900 dark:text-white">
-                                TaxHub
-                            </span>
-                        </div>
-                    )}
+                        <span className="text-lg font-bold text-gray-900 dark:text-white">
+                            TaxHub
+                        </span>
+                    </div>
                 </div>
 
                 {/* Navigation */}
                 <nav className="flex-1 overflow-y-auto py-4 px-2 space-y-6">
                     {navigation.map(section => (
                         <div key={section.section}>
-                            {!collapsed && (
-                                <h3 className="px-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">
-                                    {section.section}
-                                </h3>
-                            )}
+                            <h3 className="px-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">
+                                {section.section}
+                            </h3>
                             <ul className="space-y-1">
                                 {section.items.map(item => renderNavigationItem(item))}
                             </ul>
@@ -306,25 +288,23 @@ export default function PortalSidebar({
                 </nav>
 
                 {/* Footer - User info */}
-                {!collapsed && (
-                    <div className="border-t border-gray-200 dark:border-gray-700 p-4">
-                        <div className="flex items-center gap-3">
-                            <div className="h-10 w-10 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center">
-                                <span className="text-sm font-medium text-blue-600 dark:text-blue-300">
-                                    {session?.user?.name?.substring(0, 2).toUpperCase() || 'U'}
-                                </span>
-                            </div>
-                            <div className="flex-1 min-w-0">
-                                <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
-                                    {session?.user?.name || 'User'}
-                                </p>
-                                <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
-                                    {session?.user?.email || 'user@example.com'}
-                                </p>
-                            </div>
+                <div className="border-t border-gray-200 dark:border-gray-700 p-4">
+                    <div className="flex items-center gap-3">
+                        <div className="h-10 w-10 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center">
+                            <span className="text-sm font-medium text-blue-600 dark:text-blue-300">
+                                {session?.user?.name?.substring(0, 2).toUpperCase() || 'U'}
+                            </span>
+                        </div>
+                        <div className="flex-1 min-w-0">
+                            <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
+                                {session?.user?.name || 'User'}
+                            </p>
+                            <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                                {session?.user?.email || 'user@example.com'}
+                            </p>
                         </div>
                     </div>
-                )}
+                </div>
             </aside>
         </>
     )
