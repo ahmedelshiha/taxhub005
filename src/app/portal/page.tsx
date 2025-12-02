@@ -7,8 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Plus, Search } from "lucide-react";
-// TEST 1: Tabs enabled, but Zustand subscription DISABLED (hardcoded)
-// import { usePortalActiveTab, usePortalLayoutActions } from "@/stores/portal/layout.store";
+import { usePortalActiveTab, usePortalLayoutActions } from "@/stores/portal/layout.store";
 // import SetupWizard from "@/components/portal/business-setup/core/SetupOrchestrator";
 // import EntitySwitcher from "@/components/portal/layout/EntitySwitcher";
 import { useModal } from "@/components/providers/ModalProvider";
@@ -46,10 +45,9 @@ export default function PortalDashboardPage() {
   const { data: session } = useSession();
   const { openModal } = useModal();
 
-  // TEST 1: Hardcode activeTab instead of using Zustand
-  const [activeTab, setActiveTab] = useState("overview");
-  // const activeTab = usePortalActiveTab();
-  // const { setActiveTab } = usePortalLayoutActions();
+  // Re-enabled: Zustand subscriptions for tab persistence (safe now that OverviewTab is fixed)
+  const activeTab = usePortalActiveTab();
+  const { setActiveTab } = usePortalLayoutActions();
 
   // Global search keyboard shortcut (Cmd+K / Ctrl+K)
   useKeyboardShortcut({
