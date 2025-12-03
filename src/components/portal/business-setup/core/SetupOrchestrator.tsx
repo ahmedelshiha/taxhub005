@@ -150,7 +150,7 @@ function WizardContent() {
     )
 }
 
-import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogTitle, DialogDescription } from '@/components/ui/dialog'
 import { SetupWizardProps } from '../types/setup'
 
 export default function SetupOrchestrator({ open, onOpenChange, onComplete }: Partial<SetupWizardProps>) {
@@ -166,10 +166,10 @@ export default function SetupOrchestrator({ open, onOpenChange, onComplete }: Pa
             <Dialog open={open} onOpenChange={onOpenChange}>
                 <DialogContent className="max-w-4xl p-0 overflow-hidden bg-white dark:bg-gray-950 border-0">
                     <DialogTitle className="sr-only">Business Account Setup</DialogTitle>
-                    <div className="sr-only" id="setup-wizard-desc">
+                    <DialogDescription className="sr-only">
                         Wizard to set up a new business account
-                    </div>
-                    <div className="max-h-[90vh] overflow-y-auto" aria-describedby="setup-wizard-desc">
+                    </DialogDescription>
+                    <div className="max-h-[90vh] overflow-y-auto">
                         {content}
                     </div>
                 </DialogContent>
