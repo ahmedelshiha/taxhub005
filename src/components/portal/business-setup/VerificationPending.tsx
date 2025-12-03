@@ -29,23 +29,23 @@ export default function VerificationPending({
   const [pollCount, setPollCount] = useState(0);
   const [error, setError] = useState<string | null>(null);
 
+  // Effect for MOCK entities (Simple timeout)
   useEffect(() => {
-    if (!isPolling || status !== "pending") return;
+    if (status === "pending" && entityId.startsWith('ent_')) {
+      const timer = setTimeout(() => {
+        setStatus("verified");
+        setIsPolling(false);
+        onStatusChange?.("verified");
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [status, entityId, onStatusChange]);
+
+  // Effect for REAL entities (Polling)
+  useEffect(() => {
+    if (!isPolling || status !== "pending" || entityId.startsWith('ent_')) return;
 
     const pollInterval = setInterval(async () => {
-      // Mock verification for test entities (prevent 404s)
-      if (entityId.startsWith('ent_')) {
-        // Simulate processing delay
-        if (pollCount > 1) {
-          setStatus("verified");
-          setIsPolling(false);
-          onStatusChange?.("verified");
-          return;
-        }
-        setPollCount((prev) => prev + 1);
-        return;
-      }
-
       try {
         const response = await fetch(`/api/entities/${entityId}/verification-status`);
 
