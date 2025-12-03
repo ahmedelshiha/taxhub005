@@ -1,3 +1,5 @@
+"use client";
+
 import { useState, lazy, Suspense } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
