@@ -8,15 +8,17 @@ interface BusinessNameFieldProps {
     onChange: (value: string) => void
     error?: string
     disabled?: boolean
+    label?: string
+    placeholder?: string
 }
 
-export default function BusinessNameField({ value, onChange, error, disabled }: BusinessNameFieldProps) {
+export default function BusinessNameField({ value, onChange, error, disabled, label, placeholder }: BusinessNameFieldProps) {
     return (
         <div className="space-y-2">
-            <Label htmlFor="businessName">Business Name</Label>
+            <Label htmlFor="businessName">{label || 'Business Name'}</Label>
             <Input
                 id="businessName"
-                placeholder="Enter your registered business name"
+                placeholder={placeholder || 'Enter your registered business name'}
                 value={value || ''}
                 onChange={(e) => onChange(e.target.value)}
                 disabled={disabled}

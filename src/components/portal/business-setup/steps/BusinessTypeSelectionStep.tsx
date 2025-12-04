@@ -64,10 +64,6 @@ export default function BusinessTypeSelectionStep() {
         if (formData.businessType) {
             actions.clearValidationErrors()
             actions.markStepComplete(2)
-        } else {
-            actions.setValidationErrors([
-                { field: 'businessType', message: 'Please select a business type' }
-            ])
         }
     }, [formData.businessType])
 

@@ -12,10 +12,6 @@ export default function CountrySelectionStep() {
         if (formData.country) {
             actions.clearValidationErrors()
             actions.markStepComplete(1)
-        } else {
-            actions.setValidationErrors([
-                { field: 'country', message: 'Please select a country' }
-            ])
         }
     }, [formData.country])
 

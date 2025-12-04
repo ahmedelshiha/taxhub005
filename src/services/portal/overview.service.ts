@@ -27,6 +27,10 @@ export interface OverviewStats {
         due: number
         trend: number
     }
+    businessStatus: {
+        status: 'active' | 'pending_verification' | 'rejected' | 'requires_changes'
+        message?: string
+    }
 }
 
 export class PortalOverviewService {
@@ -35,6 +39,37 @@ export class PortalOverviewService {
      */
     async getOverview(userId: string, tenantId: string): Promise<OverviewStats> {
         const dateRanges = this.calculateDateRanges()
+
+        // Fetch entity status
+        const entity = await prisma.entity.findFirst({
+            where: { tenantId },
+            include: { approval: true }
+        })
+
+        let businessStatus: OverviewStats['businessStatus'] = { status: 'active' }
+
+        if (entity?.approval) {
+            switch (entity.approval.status) {
+                case 'PENDING':
+                    businessStatus = {
+                        status: 'pending_verification',
+                        message: 'Your business verification is in progress. This usually takes less than 12 hours.'
+                    }
+                    break
+                case 'REJECTED':
+                    businessStatus = {
+                        status: 'rejected',
+                        message: entity.approval.rejectionReason || 'Verification failed.'
+                    }
+                    break
+                case 'REQUIRES_CHANGES':
+                    businessStatus = {
+                        status: 'requires_changes',
+                        message: entity.approval.rejectionReason || 'Changes required.'
+                    }
+                    break
+            }
+        }
 
         const [
             taskStats,
@@ -69,6 +104,7 @@ export class PortalOverviewService {
                 due: complianceStats.dueSoon,
                 trend: this.calculateTrend(complianceStats.pending, complianceStats.lastMonth),
             },
+            businessStatus
         }
     }
 

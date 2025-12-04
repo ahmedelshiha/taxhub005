@@ -32,6 +32,7 @@ const STEP_COMPONENTS = [
 function WizardContent() {
     const {
         currentStep,
+        completedSteps,
         isLoading,
         isSavingDraft,
         lastSavedAt,
@@ -122,7 +123,7 @@ function WizardContent() {
                         {!isLastStep && (
                             <Button
                                 onClick={actions.nextStep}
-                                disabled={isLoading}
+                                disabled={isLoading || !completedSteps.includes(currentStep)}
                                 className="w-32 bg-blue-600 hover:bg-blue-700"
                             >
                                 Next
@@ -146,7 +147,7 @@ function WizardContent() {
                     ))}
                 </span>
             </div>
-        </div>
+        </div >
     )
 }
 

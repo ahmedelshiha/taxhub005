@@ -10,6 +10,11 @@ export interface SetupFormData {
   businessName?: string
   licenseExpiry?: string
   activities?: string[]
+  department?: string
+
+  // Individual specific
+  passportNumber?: string
+  dateOfBirth?: string
 
   // Step 4: Details
   economicZone?: string

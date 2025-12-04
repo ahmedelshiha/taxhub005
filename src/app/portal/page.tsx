@@ -8,12 +8,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Plus, Search } from "lucide-react";
-import { usePortalActiveTab, usePortalLayoutActions } from "@/stores/portal/layout.store";
-
-// EntitySwitcher is in Header now
-// import EntitySwitcher from "@/components/portal/layout/EntitySwitcher";
+import { PageLayout, ActionHeader } from "@/components/ui-oracle";
 import { useModal } from "@/components/providers/ModalProvider";
-import { toast } from "sonner";
 import { useKeyboardShortcut } from "@/hooks/useKeyboardShortcut";
 
 // Lazy-loaded tab components
@@ -47,8 +43,6 @@ export default function PortalDashboardPage() {
   const router = useRouter();
   const { data: session } = useSession();
   const { openModal } = useModal();
-
-  // Tab state - LOCAL STATE for debugging
   const [activeTab, setActiveTab] = useState("overview");
 
   // Global search keyboard shortcut (Cmd+K / Ctrl+K)
@@ -67,28 +61,22 @@ export default function PortalDashboardPage() {
     return "Good evening";
   }
 
-  return (
-    <>
-      {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 animate-fade-in">
-        {/* Header */}
-        <div className="mb-6">
-          <div className="flex items-center justify-between mb-4">
-            <div className="animate-slide-in-top">
-              <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-                {getGreeting()}, {session?.user?.name?.split(" ")[0] || "there"}
-              </h1>
-              <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                {new Date().toLocaleDateString("en-US", {
-                  weekday: "long",
-                  month: "long",
-                  day: "numeric",
-                })}
-              </p>
-            </div>
+  // Get current date string
+  const dateString = new Date().toLocaleDateString("en-US", {
+    weekday: "long",
+    month: "long",
+    day: "numeric",
+  });
 
-            {/* Quick Actions */}
-            <div className="flex items-center gap-3 animate-slide-in-left" style={{ animationDelay: '100ms' }}>
+  return (
+    <PageLayout maxWidth="7xl" className="px-4 sm:px-6 lg:px-8 py-6 animate-fade-in">
+      {/* Action Header with Quick Actions */}
+      <div className="animate-slide-in-top">
+        <ActionHeader
+          title={`${getGreeting()}, ${session?.user?.name?.split(" ")[0] || "there"}`}
+          description={dateString}
+          secondaryActions={
+            <>
               <Button
                 variant="outline"
                 size="sm"
@@ -101,55 +89,71 @@ export default function PortalDashboardPage() {
                   <span className="text-xs">⌘</span>K
                 </kbd>
               </Button>
-              <Button
-                size="sm"
-                onClick={() => router.push("/portal/business-setup")}
-              >
-                <Plus className="h-4 w-4 mr-2" />
-                Add Business
-              </Button>
-            </div>
-          </div>
-        </div>
-
-        {/* Tab Navigation */}
-        <Tabs
-          value={activeTab}
-          onValueChange={setActiveTab}
-          className="space-y-6"
-        >
-          <TabsList className="grid w-full grid-cols-5 lg:w-auto lg:inline-grid">
-            <TabsTrigger value="overview">Overview</TabsTrigger>
-            <TabsTrigger value="tasks">Tasks</TabsTrigger>
-            <TabsTrigger value="compliance">Compliance</TabsTrigger>
-            <TabsTrigger value="financial">Financial</TabsTrigger>
-            <TabsTrigger value="activity">Activity</TabsTrigger>
-          </TabsList>
-
-          {/* Tab Content with Lazy Loading */}
-          <Suspense fallback={<TabLoadingSkeleton />}>
-            <TabsContent value="overview" className="mt-6">
-              <OverviewTab />
-            </TabsContent>
-
-            <TabsContent value="tasks" className="mt-6">
-              <TasksTab />
-            </TabsContent>
-
-            <TabsContent value="compliance" className="mt-6">
-              <ComplianceTab />
-            </TabsContent>
-
-            <TabsContent value="financial" className="mt-6">
-              <FinancialTab />
-            </TabsContent>
-
-            <TabsContent value="activity" className="mt-6">
-              <ActivityTab />
-            </TabsContent>
-          </Suspense>
-        </Tabs>
+            </>
+          }
+          primaryAction={
+            <Button
+              size="sm"
+              onClick={() => router.push("/portal/business-setup")}
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              Add Business
+            </Button>
+          }
+        />
       </div>
-    </>
+
+      {/* Tab Navigation */}
+      <Tabs
+        value={activeTab}
+        onValueChange={setActiveTab}
+        className="space-y-6 animate-slide-in-left"
+        style={{ animationDelay: '150ms' }}
+      >
+        <TabsList className="grid w-full grid-cols-5 lg:w-auto lg:inline-grid">
+          <TabsTrigger value="overview">Overview</TabsTrigger>
+          <TabsTrigger value="tasks">Tasks</TabsTrigger>
+          <TabsTrigger value="compliance">Compliance</TabsTrigger>
+          <TabsTrigger value="financial">Financial</TabsTrigger>
+          <TabsTrigger value="activity">Activity</TabsTrigger>
+        </TabsList>
+
+        {/* Tab Content with Lazy Loading */}
+        <Suspense fallback={<TabLoadingSkeleton />}>
+          <TabsContent value="overview" className="mt-6">
+            <OverviewTab />
+          </TabsContent>
+
+          <TabsContent value="tasks" className="mt-6">
+            <TasksTab />
+          </TabsContent>
+
+          <TabsContent value="compliance" className="mt-6">
+            <ComplianceTab />
+          </TabsContent>
+
+          <TabsContent value="financial" className="mt-6">
+            <FinancialTab />
+          </TabsContent>
+
+          <TabsContent value="activity" className="mt-6">
+            <ActivityTab />
+          </TabsContent>
+        </Suspense>
+      </Tabs>
+
+      {/* Keyboard Shortcuts Hint */}
+      <div className="mt-8 text-center text-xs text-gray-400 animate-fade-in" style={{ animationDelay: '300ms' }}>
+        <span className="inline-flex items-center gap-4">
+          <span>⌨️ Shortcuts:</span>
+          <span>
+            <kbd className="px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded border border-gray-200 dark:border-gray-700 mx-1">
+              ⌘K
+            </kbd>
+            Global Search
+          </span>
+        </span>
+      </div>
+    </PageLayout>
   );
 }

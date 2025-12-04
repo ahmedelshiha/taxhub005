@@ -42,6 +42,10 @@ interface DashboardStats {
     bookings: { upcoming: number; thisWeek: number; trend: number }
     invoices: { outstanding: number; overdue: number; total: number }
     compliance: { pending: number; due: number; trend: number }
+    businessStatus?: {
+        status: 'active' | 'pending_verification' | 'rejected' | 'requires_changes'
+        message?: string
+    }
 }
 
 export default function OverviewTab() {
@@ -64,11 +68,31 @@ export default function OverviewTab() {
     }
 
     const stats = (data as any)?.data as DashboardStats | undefined
+    const businessStatus = stats?.businessStatus
 
     const isWidgetVisible = (id: string) => preferences[id]?.visible ?? true
 
     return (
         <div className="space-y-6 animate-in fade-in duration-300">
+            {businessStatus?.status === 'pending_verification' && (
+                <StatusMessage
+                    variant="info"
+                    title="Verifying Business"
+                >
+                    {businessStatus.message || 'Your business is currently being verified. This usually takes less than 12 hours.'}
+                </StatusMessage>
+            )}
+
+            {(businessStatus?.status === 'rejected' || businessStatus?.status === 'requires_changes') && (
+                <StatusMessage
+                    variant="error"
+                    title="Verification Action Required"
+                    
+                >
+                    {businessStatus.message || 'Your business verification requires attention.'}
+                </StatusMessage>
+            )}
+
             <div className="flex justify-end">
                 <DashboardCustomizer widgets={WIDGETS} />
             </div>
@@ -118,7 +142,7 @@ export default function OverviewTab() {
                         value={stats?.compliance.pending || 0}
                         trend={stats?.compliance.trend}
                         comparisonText={`${stats?.compliance.due || 0} due soon`}
-                        icon={AlertCircle}
+                        
                         variant={stats?.compliance.due && stats.compliance.due > 0 ? 'danger' : 'default'}
                     />
                 )}
