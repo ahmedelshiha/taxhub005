@@ -1,0 +1,52 @@
+{
+    "businessSetup": {
+        "modal": {
+            "title": "Add Business",
+            "close": "Close"
+        },
+        "tabs": {
+            "existing": "Existing Business",
+            "new": "New Business"
+        },
+        "fields": {
+            "licenseNumber": "Trade License Number",
+            "licenseNumberPlaceholder": "Enter your trade license number",
+            "businessName": "Business Name",
+            "businessNamePlaceholder": "Enter your business legal name",
+            "proposedName": "Proposed Business Name",
+            "proposedNamePlaceholder": "Enter your proposed business name",
+            "proposedNameHint": "Your proposed name will be checked for availability during the approval process",
+            "department": "Economic Department / Free Zone",
+            "departmentPlaceholder": "Search departments...",
+            "departmentHint": "Select where you plan to register your business",
+            "terms": "I confirm that the information provided is accurate and I accept the",
+            "termsLink": "Terms and Conditions",
+            "required": "*"
+        },
+        "buttons": {
+            "submit": "Complete Setup",
+            "submitting": "Setting up...",
+            "startFresh": "Start Fresh",
+            "resumeDraft": "Resume Draft"
+        },
+        "draft": {
+            "title": "Resume Your Draft?",
+            "message": "You have an unsaved draft from {age}. Would you like to continue where you left off?"
+        },
+        "countries": {
+            "AE": "United Arab Emirates",
+            "SA": "Saudi Arabia",
+            "EG": "Egypt"
+        },
+        "errors": {
+            "required": "This field is required",
+            "invalidLicense": "Invalid license number format",
+            "submitFailed": "Failed to complete setup. Please try again.",
+            "termsRequired": "You must accept the terms and conditions"
+        },
+        "success": {
+            "title": "Setup Complete!",
+            "message": "Your business has been submitted for verification."
+        }
+    }
+}

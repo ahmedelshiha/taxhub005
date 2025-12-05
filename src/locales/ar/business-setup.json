@@ -1,0 +1,52 @@
+{
+    "businessSetup": {
+        "modal": {
+            "title": "إضافة شركة",
+            "close": "إغلاق"
+        },
+        "tabs": {
+            "existing": "شركة قائمة",
+            "new": "شركة جديدة"
+        },
+        "fields": {
+            "licenseNumber": "رقم الرخصة التجارية",
+            "licenseNumberPlaceholder": "أدخل رقم الرخصة التجارية",
+            "businessName": "اسم الشركة",
+            "businessNamePlaceholder": "أدخل الاسم القانوني للشركة",
+            "proposedName": "اسم الشركة المقترح",
+            "proposedNamePlaceholder": "أدخل اسم الشركة المقترح",
+            "proposedNameHint": "سيتم التحقق من توفر الاسم المقترح أثناء عملية الموافقة",
+            "department": "الدائرة الاقتصادية / المنطقة الحرة",
+            "departmentPlaceholder": "البحث في الدوائر...",
+            "departmentHint": "اختر المكان الذي تخطط لتسجيل شركتك فيه",
+            "terms": "أؤكد أن المعلومات المقدمة صحيحة وأقبل",
+            "termsLink": "الشروط والأحكام",
+            "required": "*"
+        },
+        "buttons": {
+            "submit": "إكمال الإعداد",
+            "submitting": "جاري الإعداد...",
+            "startFresh": "البدء من جديد",
+            "resumeDraft": "استئناف المسودة"
+        },
+        "draft": {
+            "title": "استئناف المسودة؟",
+            "message": "لديك مسودة غير محفوظة من {age}. هل تريد المتابعة من حيث توقفت؟"
+        },
+        "countries": {
+            "AE": "الإمارات العربية المتحدة",
+            "SA": "المملكة العربية السعودية",
+            "EG": "مصر"
+        },
+        "errors": {
+            "required": "هذا الحقل مطلوب",
+            "invalidLicense": "تنسيق رقم الرخصة غير صالح",
+            "submitFailed": "فشل في إكمال الإعداد. يرجى المحاولة مرة أخرى.",
+            "termsRequired": "يجب قبول الشروط والأحكام"
+        },
+        "success": {
+            "title": "تم الإعداد بنجاح!",
+            "message": "تم تقديم شركتك للتحقق."
+        }
+    }
+}
