@@ -18,7 +18,7 @@ interface PortalProvidersProps {
 export function PortalProviders({ children }: PortalProvidersProps) {
     return (
         <PortalAuthGuard>
-            <ThemeProvider defaultTheme="light" enableSystem>
+            <ThemeProvider defaultTheme="dark" enableSystem={false}>
                 <QueryProvider>
                     <PortalErrorBoundary>
                         <KeyboardProvider>

@@ -27,10 +27,11 @@ export const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(
                     value={value}
                     onChange={(e) => onValueChange(e.target.value)}
                     className={`
-            w-full pl-9 pr-9 py-2 
-            border border-gray-300 rounded-md
-            focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
-            dark:bg-gray-800 dark:border-gray-600 dark:text-white
+            w-full pl-9 pr-9 py-2.5 
+            border border-gray-700 rounded-lg
+            bg-gray-800 text-white placeholder-gray-500
+            focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500
+            transition-colors
             ${className}
           `}
                     {...props}

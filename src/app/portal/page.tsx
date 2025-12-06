@@ -104,20 +104,10 @@ export default function PortalDashboardPage() {
           title={`${getGreeting()}, ${session?.user?.name?.split(" ")[0] || "there"}`}
           description={dateString}
           secondaryActions={
-            <>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => openModal("global-search")}
-                className="hidden sm:flex"
-              >
-                <Search className="h-4 w-4 mr-2" />
-                Search
-                <kbd className="ml-2 pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground opacity-100">
-                  <span className="text-xs">⌘</span>K
-                </kbd>
-              </Button>
-            </>
+            <span className="hidden sm:inline-flex items-center text-sm text-gray-400">
+              <kbd className="px-2 py-1 bg-gray-800 rounded border border-gray-700 text-xs mr-1">⌘K</kbd>
+              to search
+            </span>
           }
           primaryAction={
             <Button

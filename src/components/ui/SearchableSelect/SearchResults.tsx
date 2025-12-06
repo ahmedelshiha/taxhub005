@@ -64,7 +64,7 @@ export function SearchResults<T>({
             ref={listRef}
             role="listbox"
             onKeyDown={handleKeyDown}
-            className="overflow-y-auto border-t border-gray-200 dark:border-gray-700"
+            className="overflow-y-auto border-t border-gray-700"
             style={{ maxHeight }}
         >
             {items.map((item, index) => (

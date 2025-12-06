@@ -8,4 +8,5 @@ export { SuccessScreen } from './SuccessScreen'
 export { EntityCard, type EntityData } from './EntityCard'
 export { EntityList } from './EntityList'
 export { EntityTreeView, type EntityNode } from './EntityTreeView'
+export { WelcomeEmptyState } from './WelcomeEmptyState'
 

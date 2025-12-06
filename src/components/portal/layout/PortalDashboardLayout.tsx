@@ -27,7 +27,7 @@ export default function PortalDashboardLayout({
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
     return (
-        <div className={cn('min-h-screen bg-gray-50 dark:bg-gray-900', className)}>
+        <div className={cn('min-h-screen bg-gray-900', className)}>
             {/* Skip to main content link for accessibility */}
             <a
                 href="#portal-main-content"

@@ -11,6 +11,7 @@ import { SetupModalSkeleton } from '../components/LoadingStates'
 import { analytics } from '../services/analytics'
 import { useAutoSave, loadDraft, clearDraft, hasDraft, getDraftAge } from '../hooks/useAutoSave'
 import { SuccessScreen } from '@/components/portal/entities'
+import { SetupModalBranding } from './SetupModalBranding'
 import type { SetupFormData } from '../types/setup'
 
 export interface SetupModalProps {
@@ -197,110 +198,117 @@ export function SetupModal({ open, onOpenChange, onComplete }: SetupModalProps) 
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent
                 className="
-                    max-w-2xl w-[95vw] sm:w-full
+                    max-w-5xl w-[95vw] sm:w-full
                     p-0 gap-0
                     bg-gray-900 text-white
                     border border-gray-800
                     shadow-2xl
                     max-h-[90vh] sm:max-h-[85vh]
                     overflow-hidden
-                    flex flex-col
                 "
                 onInteractOutside={(e) => e.preventDefault()}
             >
-                <SetupErrorBoundary>
-                    {/* Header with Country Selector */}
-                    <div className="
+                <div className="flex flex-col lg:flex-row min-h-[500px] max-h-[85vh]">
+                    {/* Left: LEDGERS-style Branding Panel */}
+                    <SetupModalBranding />
+
+                    {/* Right: Form Panel */}
+                    <div className="flex-1 flex flex-col overflow-hidden">
+                        <SetupErrorBoundary>
+                            {/* Header with Country Selector */}
+                            <div className="
                         flex items-center justify-between
                         px-4 sm:px-6 py-3 sm:py-4
                         border-b border-gray-800
                         flex-shrink-0
                     ">
-                        <div className="flex items-center gap-2 sm:gap-4 flex-wrap">
-                            <h2 className="text-lg sm:text-xl font-semibold">
-                                Business Setup
-                            </h2>
-                            <CountryFlagSelector
-                                value={selectedCountry}
-                                onChange={handleCountryChange}
-                                className="ml-0 sm:ml-2"
-                            />
-                        </div>
+                                <div className="flex items-center gap-2 sm:gap-4 flex-wrap">
+                                    <h2 className="text-lg sm:text-xl font-semibold">
+                                        Business Setup
+                                    </h2>
+                                    <CountryFlagSelector
+                                        value={selectedCountry}
+                                        onChange={handleCountryChange}
+                                        className="ml-0 sm:ml-2"
+                                    />
+                                </div>
 
-                        <button
-                            onClick={handleClose}
-                            className="
+                                <button
+                                    onClick={handleClose}
+                                    className="
                                 p-2 rounded-lg
                                 hover:bg-gray-800
                                 transition-colors
                                 min-w-[44px] min-h-[44px]
                                 flex items-center justify-center
                             "
-                            aria-label="Close"
-                        >
-                            <X className="w-5 h-5" />
-                        </button>
-                    </div>
+                                    aria-label="Close"
+                                >
+                                    <X className="w-5 h-5" />
+                                </button>
+                            </div>
 
-                    {/* Tabs - Mobile optimized with larger touch targets */}
-                    <div className="
+                            {/* Tabs - Mobile optimized with larger touch targets */}
+                            <div className="
                         flex border-b border-gray-800
                         px-4 sm:px-6
                         flex-shrink-0
                     ">
-                        <button
-                            onClick={() => handleTabChange('existing')}
-                            className={`
+                                <button
+                                    onClick={() => handleTabChange('existing')}
+                                    className={`
                                 px-3 sm:px-4 py-3 sm:py-3 
                                 font-medium text-sm
                                 border-b-2 transition-colors
                                 min-h-[44px]
                                 ${activeTab === 'existing'
-                                    ? 'border-blue-500 text-blue-400'
-                                    : 'border-transparent text-gray-400 hover:text-gray-300'
-                                }
+                                            ? 'border-blue-500 text-blue-400'
+                                            : 'border-transparent text-gray-400 hover:text-gray-300'
+                                        }
                             `}
-                        >
-                            Existing Business
-                        </button>
-                        <button
-                            onClick={() => handleTabChange('new')}
-                            className={`
+                                >
+                                    Existing Business
+                                </button>
+                                <button
+                                    onClick={() => handleTabChange('new')}
+                                    className={`
                                 px-3 sm:px-4 py-3 sm:py-3 
                                 font-medium text-sm
                                 border-b-2 transition-colors
                                 min-h-[44px]
                                 ${activeTab === 'new'
-                                    ? 'border-blue-500 text-blue-400'
-                                    : 'border-transparent text-gray-400 hover:text-gray-300'
-                                }
+                                            ? 'border-blue-500 text-blue-400'
+                                            : 'border-transparent text-gray-400 hover:text-gray-300'
+                                        }
                             `}
-                        >
-                            New Business
-                        </button>
-                    </div>
+                                >
+                                    New Business
+                                </button>
+                            </div>
 
-                    {/* Tab Content - Scrollable on mobile */}
-                    <div className="p-4 sm:p-6 overflow-y-auto flex-1">
-                        <Suspense fallback={<SetupModalSkeleton />}>
-                            {activeTab === 'existing' ? (
-                                <ExistingEntityTab
-                                    country={selectedCountry}
-                                    formData={formData}
-                                    onFormDataChange={setFormData}
-                                    onSubmit={handleSubmit}
-                                />
-                            ) : (
-                                <NewEntityTab
-                                    country={selectedCountry}
-                                    formData={formData}
-                                    onFormDataChange={setFormData}
-                                    onSubmit={handleSubmit}
-                                />
-                            )}
-                        </Suspense>
+                            {/* Tab Content - Scrollable on mobile */}
+                            <div className="p-4 sm:p-6 overflow-y-auto flex-1">
+                                <Suspense fallback={<SetupModalSkeleton />}>
+                                    {activeTab === 'existing' ? (
+                                        <ExistingEntityTab
+                                            country={selectedCountry}
+                                            formData={formData}
+                                            onFormDataChange={setFormData}
+                                            onSubmit={handleSubmit}
+                                        />
+                                    ) : (
+                                        <NewEntityTab
+                                            country={selectedCountry}
+                                            formData={formData}
+                                            onFormDataChange={setFormData}
+                                            onSubmit={handleSubmit}
+                                        />
+                                    )}
+                                </Suspense>
+                            </div>
+                        </SetupErrorBoundary>
                     </div>
-                </SetupErrorBoundary>
+                </div>
             </DialogContent>
         </Dialog>
     )

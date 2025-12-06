@@ -88,7 +88,7 @@ export function ClientLayout({ children, session, orgName, orgLogoUrl, contactEm
         }
         // Suppress dev overlay noise for Next HMR/network hiccups
         if (/failed to fetch/i.test(msgStr)) {
-          try { event.preventDefault?.() } catch {}
+          try { event.preventDefault?.() } catch { }
         }
       } catch {
         // ignore
@@ -120,7 +120,7 @@ export function ClientLayout({ children, session, orgName, orgLogoUrl, contactEm
         }
         // Suppress dev overlay noise for HMR-related fetch errors
         if (/failed to fetch/i.test(msgStr) || /hot-reloader|\?reload=|hmr/i.test(msgStr)) {
-          try { ev.preventDefault?.() } catch {}
+          try { ev.preventDefault?.() } catch { }
         }
       } catch {
         // ignore
@@ -148,7 +148,7 @@ export function ClientLayout({ children, session, orgName, orgLogoUrl, contactEm
               if (method !== 'HEAD' && !url.includes('/api/admin/health-history')) {
                 console.error('[fetch] non-ok response', { status: res.status, url, init })
               }
-            } catch {}
+            } catch { }
           }
 
           return res
@@ -202,7 +202,7 @@ export function ClientLayout({ children, session, orgName, orgLogoUrl, contactEm
         if (window.__fetchLogged) {
           delete window.__fetchLogged
         }
-      } catch {}
+      } catch { }
     }
   }, [])
 
@@ -213,7 +213,7 @@ export function ClientLayout({ children, session, orgName, orgLogoUrl, contactEm
   // When connectivity returns, attempt to process any queued submissions
   useEffect(() => {
     if (process.env.NEXT_PUBLIC_ENABLE_PWA === '1') {
-      const onOnline = () => { import('@/lib/offline-queue').then(mod => { mod.processQueuedServiceRequests?.().catch(() => {}) }) }
+      const onOnline = () => { import('@/lib/offline-queue').then(mod => { mod.processQueuedServiceRequests?.().catch(() => { }) }) }
       window.addEventListener('online', onOnline)
       return () => window.removeEventListener('online', onOnline)
     }
@@ -223,8 +223,8 @@ export function ClientLayout({ children, session, orgName, orgLogoUrl, contactEm
   useEffect(() => {
     if (process.env.NEXT_PUBLIC_ENABLE_PWA === '1' && typeof window !== 'undefined' && 'serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        try { navigator.serviceWorker.register('/sw.js') } catch {}
-        import('@/lib/offline-queue').then(mod => { mod.registerBackgroundSync?.().catch(() => {}) }).catch(() => {})
+        try { navigator.serviceWorker.register('/sw.js') } catch { }
+        import('@/lib/offline-queue').then(mod => { mod.registerBackgroundSync?.().catch(() => { }) }).catch(() => { })
       })
     }
   }, [])
@@ -233,15 +233,16 @@ export function ClientLayout({ children, session, orgName, orgLogoUrl, contactEm
   const pathname = usePathname()
   const showPortalChat = pathname?.startsWith('/portal') || false
   const isAdminRoute = pathname?.startsWith('/admin') || false
+  const isPortalRoute = pathname?.startsWith('/portal') || false
 
-  // Ensure dark theme is only applied within admin dashboard
+  // Ensure dark theme is applied within admin and portal dashboards
   useEffect(() => {
     try {
-      if (!isAdminRoute && typeof document !== 'undefined') {
+      if (!isAdminRoute && !isPortalRoute && typeof document !== 'undefined') {
         document.documentElement.classList.remove('dark')
       }
-    } catch {}
-  }, [isAdminRoute])
+    } catch { }
+  }, [isAdminRoute, isPortalRoute])
 
   // Global sidebar keyboard shortcuts
   useSidebarKeyboardShortcuts()
@@ -254,21 +255,21 @@ export function ClientLayout({ children, session, orgName, orgLogoUrl, contactEm
   React.useEffect(() => {
     let mounted = true
     if (!session?.user) return
-    ;(async () => {
-      try {
-        const res = await fetch('/api/admin/sidebar-preferences')
-        if (!mounted) return
-        if (!res.ok) return
-        const json = await res.json()
-        const data = json?.data || json
-        if (!data) return
-        if (typeof data.collapsed === 'boolean') storeSetCollapsed(Boolean(data.collapsed))
-        if (typeof data.width === 'number') storeSetWidth(Number(data.width))
-        if (Array.isArray(data.expandedGroups)) storeSetExpanded(data.expandedGroups)
-      } catch (e) {
-        // ignore - fallback to localStorage is already handled by store migration
-      }
-    })()
+      ; (async () => {
+        try {
+          const res = await fetch('/api/admin/sidebar-preferences')
+          if (!mounted) return
+          if (!res.ok) return
+          const json = await res.json()
+          const data = json?.data || json
+          if (!data) return
+          if (typeof data.collapsed === 'boolean') storeSetCollapsed(Boolean(data.collapsed))
+          if (typeof data.width === 'number') storeSetWidth(Number(data.width))
+          if (Array.isArray(data.expandedGroups)) storeSetExpanded(data.expandedGroups)
+        } catch (e) {
+          // ignore - fallback to localStorage is already handled by store migration
+        }
+      })()
     return () => { mounted = false }
   }, [session?.user, storeSetCollapsed, storeSetWidth, storeSetExpanded])
 
@@ -281,7 +282,7 @@ export function ClientLayout({ children, session, orgName, orgLogoUrl, contactEm
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
-      }).catch(() => {})
+      }).catch(() => { })
     }, 250)
     return () => clearTimeout(t)
   }, [session?.user, storeCollapsed, storeWidth, storeExpanded,])
@@ -297,12 +298,12 @@ export function ClientLayout({ children, session, orgName, orgLogoUrl, contactEm
           Only show main site navigation on NON-admin routes
           Admin routes will have their own dedicated layout with sidebar navigation
         */}
-        {!isAdminRoute && <Navigation currentLocale={locale} orgName={uiOrgName} orgLogoUrl={uiOrgLogoUrl} />}
+        {!isAdminRoute && !isPortalRoute && <Navigation currentLocale={locale} orgName={uiOrgName} orgLogoUrl={uiOrgLogoUrl} />}
         <main id="site-main-content" tabIndex={-1} role="main" className="flex-1">
           {children}
         </main>
-        {/* Only show footer on non-admin routes */}
-        {!isAdminRoute && <OptimizedFooter />}
+        {/* Only show footer on non-admin and non-portal routes */}
+        {!isAdminRoute && !isPortalRoute && <OptimizedFooter />}
       </div>
       {/* Capture performance metrics only on admin routes to reduce noise on public pages */}
       {isAdminRoute ? <PerfMetricsReporter /> : null}

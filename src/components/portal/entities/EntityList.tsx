@@ -8,11 +8,12 @@
  */
 
 import { useState } from 'react'
-import { Plus, Building2, List, Workflow } from 'lucide-react'
+import { Plus, List, Workflow } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { EntityCard, type EntityData } from './EntityCard'
 import { EntityTreeView } from './EntityTreeView'
 import { Skeleton } from '@/components/ui/skeleton'
+import { WelcomeEmptyState } from './WelcomeEmptyState'
 
 interface EntityListProps {
     entities: EntityData[]
@@ -63,31 +64,13 @@ export function EntityList({
         )
     }
 
-    // Empty state
+    // Empty state - use premium welcome component
     if (entities.length === 0) {
         return (
-            <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                    <h2 className="text-lg font-semibold text-white">{title}</h2>
-                </div>
-                <div className="flex flex-col items-center justify-center py-12 px-4 bg-gray-800/30 border border-gray-700/50 rounded-lg text-center">
-                    <div className="w-16 h-16 bg-gray-800 rounded-full flex items-center justify-center mb-4">
-                        <Building2 className="w-8 h-8 text-gray-500" />
-                    </div>
-                    <h3 className="text-lg font-medium text-gray-300 mb-2">
-                        No businesses yet
-                    </h3>
-                    <p className="text-sm text-gray-500 mb-6 max-w-sm">
-                        Add your first business to start managing taxes, compliance, and more.
-                    </p>
-                    {onAddBusiness && (
-                        <Button onClick={onAddBusiness} className="gap-2">
-                            <Plus className="w-4 h-4" />
-                            Add Your First Business
-                        </Button>
-                    )}
-                </div>
-            </div>
+            <WelcomeEmptyState
+                title={title}
+                onAddBusiness={onAddBusiness}
+            />
         )
     }
 

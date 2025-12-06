@@ -24,11 +24,11 @@ export function SearchResultItem<T>({
             type="button"
             onClick={() => onSelect(item)}
             className={`
-        w-full px-3 py-2 text-left
+        w-full px-3 py-2.5 text-left text-gray-100
         transition-colors
-        ${isFocused ? 'bg-blue-50 dark:bg-blue-900/20' : ''}
-        ${isSelected ? 'bg-blue-100 dark:bg-blue-900/30 font-medium' : ''}
-        ${!isFocused && !isSelected ? 'hover:bg-gray-50 dark:hover:bg-gray-800' : ''}
+        ${isFocused ? 'bg-blue-600/20' : ''}
+        ${isSelected ? 'bg-blue-600/30 font-medium' : ''}
+        ${!isFocused && !isSelected ? 'hover:bg-gray-800' : ''}
       `}
             role="option"
             aria-selected={isSelected}
