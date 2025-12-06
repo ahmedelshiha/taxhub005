@@ -203,17 +203,17 @@ export function SetupModal({ open, onOpenChange, onComplete }: SetupModalProps) 
                     bg-gray-900 text-white
                     border border-gray-800
                     shadow-2xl
-                    max-h-[95vh]
+                    h-[95vh] max-h-[95vh]
                     overflow-hidden
                 "
                 onInteractOutside={(e) => e.preventDefault()}
             >
-                <div className="flex flex-col lg:flex-row min-h-[600px] h-[90vh] lg:h-auto lg:min-h-[650px]">
+                <div className="flex flex-col lg:flex-row h-full">
                     {/* Left: LEDGERS-style Branding Panel */}
                     <SetupModalBranding />
 
-                    {/* Right: Form Panel */}
-                    <div className="flex-1 flex flex-col min-h-0 overflow-y-auto">
+                    {/* Right: Form Panel - Scrollable */}
+                    <div className="flex-1 flex flex-col overflow-hidden">
                         <SetupErrorBoundary>
                             {/* Header with Country Selector */}
                             <div className="
@@ -286,8 +286,8 @@ export function SetupModal({ open, onOpenChange, onComplete }: SetupModalProps) 
                                 </button>
                             </div>
 
-                            {/* Tab Content - Scrollable on mobile */}
-                            <div className="p-4 sm:p-6 overflow-y-auto flex-1">
+                            {/* Tab Content - Scrollable */}
+                            <div className="p-4 sm:p-6 overflow-y-auto flex-1 min-h-0">
                                 <Suspense fallback={<SetupModalSkeleton />}>
                                     {activeTab === 'existing' ? (
                                         <ExistingEntityTab

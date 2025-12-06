@@ -13,6 +13,7 @@ import PortalFooter from './PortalFooter'
 import { Breadcrumbs } from '../Breadcrumbs'
 import { cn } from '@/lib/utils'
 import { OfflineIndicator } from '../OfflineIndicator'
+import { PortalMenuCustomizationModal } from '@/components/portal/menu'
 
 interface PortalDashboardLayoutProps {
     children: React.ReactNode
@@ -25,6 +26,17 @@ export default function PortalDashboardLayout({
 }: PortalDashboardLayoutProps) {
     // Simple mobile menu state - no complex effects or subscriptions
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+
+    // Menu customization modal state
+    const [menuCustomizationOpen, setMenuCustomizationOpen] = useState(false)
+
+    const handleOpenMenuCustomization = () => {
+        setMenuCustomizationOpen(true)
+    }
+
+    const handleCloseMenuCustomization = () => {
+        setMenuCustomizationOpen(false)
+    }
 
     return (
         <div className={cn('min-h-screen bg-gray-900', className)}>
@@ -44,12 +56,16 @@ export default function PortalDashboardLayout({
             <PortalSidebar
                 isOpen={mobileMenuOpen}
                 onClose={() => setMobileMenuOpen(false)}
+                onOpenMenuCustomization={handleOpenMenuCustomization}
             />
 
             {/* Main content area - CSS handles margin on desktop */}
             <div className="md:ml-64 min-h-screen flex flex-col">
                 {/* Header */}
-                <PortalHeader onMenuToggle={() => setMobileMenuOpen(!mobileMenuOpen)} />
+                <PortalHeader
+                    onMenuToggle={() => setMobileMenuOpen(!mobileMenuOpen)}
+                    onOpenMenuCustomization={handleOpenMenuCustomization}
+                />
 
                 {/* Breadcrumbs */}
                 <div className="border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
@@ -76,6 +92,13 @@ export default function PortalDashboardLayout({
             </div>
 
             <OfflineIndicator />
+
+            {/* Menu Customization Modal */}
+            <PortalMenuCustomizationModal
+                isOpen={menuCustomizationOpen}
+                onClose={handleCloseMenuCustomization}
+            />
         </div>
     )
 }
+

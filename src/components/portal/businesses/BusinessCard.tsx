@@ -25,6 +25,7 @@ interface BusinessCardProps {
         licensesCount?: number;
         registrationsCount?: number;
     };
+    onAction?: (id: string, name: string, action: 'ARCHIVE' | 'DELETE') => void;
 }
 
 const statusConfig = {
@@ -62,7 +63,7 @@ const countryFlags: Record<string, string> = {
     EG: "🇪🇬",
 };
 
-export function BusinessCard({ business }: BusinessCardProps) {
+export function BusinessCard({ business, onAction }: BusinessCardProps) {
     const statusInfo = statusConfig[business.status as keyof typeof statusConfig] || {
         label: business.status,
         className: "bg-gray-100 text-gray-700",
@@ -106,8 +107,16 @@ export function BusinessCard({ business }: BusinessCardProps) {
                             <DropdownMenuItem onClick={handleViewDetails}>
                                 View Details
                             </DropdownMenuItem>
-                            <DropdownMenuItem>Edit</DropdownMenuItem>
-                            <DropdownMenuItem className="text-red-600">
+                            <DropdownMenuItem onClick={() => window.location.href = `/portal/businesses/${business.id}/edit`}>
+                                Edit
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                                className="text-red-600"
+                                onClick={(e) => {
+                                    e.stopPropagation()
+                                    onAction?.(business.id, business.name, 'ARCHIVE')
+                                }}
+                            >
                                 Archive
                             </DropdownMenuItem>
                         </DropdownMenuContent>

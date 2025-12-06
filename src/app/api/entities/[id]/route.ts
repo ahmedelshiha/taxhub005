@@ -19,12 +19,13 @@ const updateEntitySchema = z.object({
  */
 const _api_GET = async (
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) => {
   try {
     const ctx = requireTenantContext();
     const userId = ctx.userId;
     const tenantId = ctx.tenantId;
+    const { id } = await params;
 
     if (!userId || !tenantId) {
       return NextResponse.json(
@@ -33,13 +34,14 @@ const _api_GET = async (
       );
     }
 
-    const entity = await entityService.getEntity(tenantId, params.id);
+    const entity = await entityService.getEntity(tenantId, id);
 
     return NextResponse.json({
       success: true,
       data: entity,
     });
   } catch (error: unknown) {
+    const { id } = await params;
     if (error instanceof Error && error.message.includes("Unauthorized")) {
       return NextResponse.json(
         { error: "Not found or unauthorized" },
@@ -47,7 +49,7 @@ const _api_GET = async (
       );
     }
 
-    logger.error("Error fetching entity", { error, entityId: params.id });
+    logger.error("Error fetching entity", { error, entityId: id });
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }
@@ -61,12 +63,13 @@ const _api_GET = async (
  */
 const _api_PATCH = async (
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) => {
   try {
     const ctx = requireTenantContext();
     const userId = ctx.userId;
     const tenantId = ctx.tenantId;
+    const { id } = await params;
 
     if (!userId || !tenantId) {
       return NextResponse.json(
@@ -83,7 +86,7 @@ const _api_PATCH = async (
     // Update entity
     const entity = await entityService.updateEntity(
       tenantId,
-      params.id,
+      id,
       userId,
       input
     );
@@ -97,6 +100,7 @@ const _api_PATCH = async (
       data: entity,
     });
   } catch (error: unknown) {
+    const { id } = await params;
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { error: "Validation error", details: error.issues },
@@ -111,7 +115,7 @@ const _api_PATCH = async (
       );
     }
 
-    logger.error("Error updating entity", { error, entityId: params.id });
+    logger.error("Error updating entity", { error, entityId: id });
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }
@@ -125,12 +129,13 @@ const _api_PATCH = async (
  */
 const _api_DELETE = async (
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) => {
   try {
     const ctx = requireTenantContext();
     const userId = ctx.userId;
     const tenantId = ctx.tenantId;
+    const { id } = await params;
 
     if (!userId || !tenantId) {
       return NextResponse.json(
@@ -144,14 +149,14 @@ const _api_DELETE = async (
 
     if (permanent) {
       // Hard delete (requires archived status)
-      await entityService.deleteEntity(tenantId, params.id, userId);
+      await entityService.deleteEntity(tenantId, id, userId);
     } else {
       // Soft delete (archive)
-      await entityService.archiveEntity(tenantId, params.id, userId);
+      await entityService.archiveEntity(tenantId, id, userId);
     }
 
     logger.info("Entity deleted/archived successfully", {
-      entityId: params.id,
+      entityId: id,
       permanent,
     });
 
@@ -160,6 +165,7 @@ const _api_DELETE = async (
       message: permanent ? "Entity deleted" : "Entity archived",
     });
   } catch (error: unknown) {
+    const { id } = await params;
     if (error instanceof Error && error.message.includes("Unauthorized")) {
       return NextResponse.json(
         { error: "Not found or unauthorized" },
@@ -167,7 +173,7 @@ const _api_DELETE = async (
       );
     }
 
-    logger.error("Error deleting entity", { error, entityId: params.id });
+    logger.error("Error deleting entity", { error, entityId: id });
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }

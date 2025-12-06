@@ -14,14 +14,16 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import NotificationBell from '@/components/portal/layout/NotificationBell'
 import { BusinessSwitcher } from '@/components/portal/layout/BusinessSwitcher'
+import { PortalUserProfileDropdown } from '@/components/portal/profile'
 import { useModal } from '@/components/providers/ModalProvider'
 import { useKeyboardShortcut } from '@/hooks/useKeyboardShortcut'
 
 interface PortalHeaderProps {
   onMenuToggle?: () => void
+  onOpenMenuCustomization?: () => void
 }
 
-export default function PortalHeader({ onMenuToggle }: PortalHeaderProps) {
+export default function PortalHeader({ onMenuToggle, onOpenMenuCustomization }: PortalHeaderProps) {
   const router = useRouter()
   const { data: session } = useSession()
   const { openModal } = useModal()
@@ -100,6 +102,9 @@ export default function PortalHeader({ onMenuToggle }: PortalHeaderProps) {
 
             {/* Notifications */}
             <NotificationBell onOpenCenter={() => openModal('notification-center')} />
+
+            {/* User Profile Dropdown */}
+            <PortalUserProfileDropdown onOpenMenuCustomization={onOpenMenuCustomization} />
 
             {/* Mobile search button */}
             <Button

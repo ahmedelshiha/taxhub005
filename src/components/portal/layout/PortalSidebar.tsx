@@ -29,6 +29,7 @@ import {
     Building2,
     ClipboardList,
     Target,
+    Palette,
 } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -51,11 +52,13 @@ interface NavigationSection {
 interface PortalSidebarProps {
     isOpen: boolean
     onClose: () => void
+    onOpenMenuCustomization?: () => void
 }
 
 export default function PortalSidebar({
     isOpen,
-    onClose
+    onClose,
+    onOpenMenuCustomization
 }: PortalSidebarProps) {
     const pathname = usePathname()
     const router = useRouter()
@@ -287,23 +290,26 @@ export default function PortalSidebar({
                     ))}
                 </nav>
 
-                {/* Footer - User info */}
-                <div className="border-t border-gray-200 dark:border-gray-700 p-4">
-                    <div className="flex items-center gap-3">
-                        <div className="h-10 w-10 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center">
-                            <span className="text-sm font-medium text-blue-600 dark:text-blue-300">
-                                {session?.user?.name?.substring(0, 2).toUpperCase() || 'U'}
-                            </span>
-                        </div>
-                        <div className="flex-1 min-w-0">
-                            <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
-                                {session?.user?.name || 'User'}
-                            </p>
-                            <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
-                                {session?.user?.email || 'user@example.com'}
-                            </p>
-                        </div>
-                    </div>
+                {/* Footer - Menu Settings */}
+                <div className="border-t border-gray-200 dark:border-gray-700 p-3">
+                    <button
+                        onClick={() => {
+                            onOpenMenuCustomization?.()
+                            if (window.innerWidth < 768) onClose()
+                        }}
+                        className={cn(
+                            'flex items-center gap-3 w-full px-3 py-2.5 rounded-lg',
+                            'text-sm font-medium text-gray-600 dark:text-gray-300',
+                            'hover:bg-gray-100 dark:hover:bg-gray-800',
+                            'transition-colors duration-200',
+                            'focus-visible:outline-none focus-visible:ring-2',
+                            'focus-visible:ring-blue-500'
+                        )}
+                        aria-label="Customize menu"
+                    >
+                        <Palette className="h-5 w-5 text-gray-400" />
+                        <span>Menu Settings</span>
+                    </button>
                 </div>
             </aside>
         </>

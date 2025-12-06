@@ -44,15 +44,23 @@ export class EntitiesService extends BaseService {
             },
         })
 
-        return entities.map(e => ({
-            id: e.id,
-            name: e.name,
-            status: e.approval?.status || e.status,
-            country: e.country,
-            legalForm: e.legalForm || undefined,
-            createdAt: e.createdAt?.toISOString(),
-            approvalStatus: e.approval?.status || undefined,
-        }))
+        return entities.map(e => {
+            // Determine display status:
+            // - If entity has approval and it's PENDING or REQUIRES_CHANGES, show approval status
+            // - Otherwise show the entity status (which gets set to ACTIVE after approval)
+            const isPendingApproval = e.approval?.status === 'PENDING' || e.approval?.status === 'REQUIRES_CHANGES';
+            const displayStatus = isPendingApproval ? e.approval!.status : e.status;
+
+            return {
+                id: e.id,
+                name: e.name,
+                status: displayStatus,
+                country: e.country,
+                legalForm: e.legalForm || undefined,
+                createdAt: e.createdAt?.toISOString(),
+                approvalStatus: e.approval?.status || undefined,
+            };
+        })
     }
 
     /**

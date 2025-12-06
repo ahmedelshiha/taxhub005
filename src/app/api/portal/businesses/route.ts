@@ -24,8 +24,9 @@ export const GET = withTenantContext(
         tenantId as string
       );
 
-      // Extract entity IDs
+      // Extract entity IDs and create role map
       const entityIds = userEntities.map((ue) => ue.entityId);
+      const roleMap = new Map(userEntities.map((ue) => [ue.entityId, ue.role]));
 
       // Build query filter
       const where: any = {
@@ -65,7 +66,7 @@ export const GET = withTenantContext(
         legalForm: entity.legalForm,
         status: entity.status,
         createdAt: entity.createdAt,
-        userRole: "OWNER", // Will be enhanced with actual role from UserOnEntity
+        userRole: roleMap.get(entity.id) || "MEMBER",
         licensesCount: entity.licenses.length,
         registrationsCount: entity.registrations.length,
       }));
